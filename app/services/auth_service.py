@@ -1,4 +1,5 @@
 # app/services/auth_service.py
+import logging
 from typing import Optional
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
@@ -6,14 +7,16 @@ from fastapi import HTTPException, status
 from app.models import User, UserRole
 from app.schemas.auth import UserRegister, UserLogin
 from app.core.security import verify_password, get_password_hash, create_access_token
+from app.services.email_service import EmailService
 from app.utils.helpers import validate_email, validate_phone
 
+logger = logging.getLogger(__name__)
 
 class AuthService:
     """Service for authentication operations"""
 
     @staticmethod
-    def register_user(db: Session, user_data: UserRegister) -> User:
+    async def register_user(db: Session, user_data: UserRegister) -> User:
         """
         Register a new user.
 
@@ -65,6 +68,12 @@ class AuthService:
         db.add(user)
         db.commit()
         db.refresh(user)
+
+        # Send welcome email (don't fail registration if email fails)
+        try:
+            await EmailService.send_welcome_email(user)
+        except Exception as e:
+            logger.error(f"Failed to send welcome email: {e}")
 
         return user
 
@@ -138,4 +147,3 @@ class AuthService:
             User object if found, None otherwise
         """
         return db.query(User).filter(User.email == email).first()
-    

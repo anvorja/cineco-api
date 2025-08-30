@@ -2,6 +2,7 @@
 import random
 from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from fastapi import HTTPException, status
 
 from app.models import Purchase, Ticket, Movie, User, PurchaseStatus, TicketStatus
@@ -228,16 +229,12 @@ class PurchaseService:
             Purchase.status == PurchaseStatus.CONFIRMED
         ).count()
 
-        total_revenue = db.query(Purchase).filter(
+        total_revenue = db.query(func.sum(Purchase.total_amount)).filter(
             Purchase.status == PurchaseStatus.CONFIRMED
-        ).with_entities(
-            db.func.sum(Purchase.total_amount)
         ).scalar() or 0
 
-        total_tickets = db.query(Purchase).filter(
+        total_tickets = db.query(func.sum(Purchase.quantity)).filter(
             Purchase.status == PurchaseStatus.CONFIRMED
-        ).with_entities(
-            db.func.sum(Purchase.quantity)
         ).scalar() or 0
 
         # Average purchase amount
@@ -250,4 +247,3 @@ class PurchaseService:
             "average_purchase_amount": round(avg_purchase, 2),
             "currency": "COP"
         }
-    

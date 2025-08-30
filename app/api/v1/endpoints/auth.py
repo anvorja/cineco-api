@@ -27,7 +27,7 @@ async def register(
 
     Returns the created user information (without password).
     """
-    user = AuthService.register_user(db, user_data)
+    user = await AuthService.register_user(db, user_data)
     return UserResponse.from_orm(user)
 
 
