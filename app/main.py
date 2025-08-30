@@ -1,14 +1,3 @@
-# # app/main.py
-# from fastapi import FastAPI
-#
-# app = FastAPI()
-#
-#
-# @app.get("/")
-# async def root():
-#     return {"message": "🎬 Cinema Ticket API", "status": "Working!"}
-#
-
 # app/main.py
 import logging
 from contextlib import asynccontextmanager

@@ -1,6 +1,5 @@
 # app/core/database.py
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 from .config import settings
@@ -18,9 +17,6 @@ SessionLocal = sessionmaker(
     bind=engine
 )
 
-Base = declarative_base()
-
-
 def get_db():
     db = SessionLocal()
     try:
@@ -30,8 +26,10 @@ def get_db():
 
 
 def create_tables():
+    from app.models.base import Base
     Base.metadata.create_all(bind=engine)
 
 
 def drop_tables():
+    from app.models.base import Base
     Base.metadata.drop_all(bind=engine)

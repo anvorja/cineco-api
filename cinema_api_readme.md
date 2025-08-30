@@ -11,6 +11,24 @@ API REST para sistema de compra de entradas de cine desarrollada con FastAPI y P
 - **Email**: SendGrid/SMTP
 - **Contenedores**: Docker + Docker Compose
 
+### Usar:
+
+### 1. **SQLAlchemy 2.0 moderno**
+   - ✅ **Mejores tipos** - Sistema de tipos más robusto y expresivo
+   - ⚡ **Mejor rendimiento** - Optimizaciones significativas en el ORM
+
+### 2. **Type safety completa**
+   - 🔍 **MyPy integration** - Verificación estática de tipos integrada
+
+### 3. **Timezone aware**
+   - 🌍 **Timestamps conscientes** - Manejo adecuado de zonas horarias
+   - ⏰ **UTC por defecto** - Almacenamiento consistente en UTC
+
+### 4. **Menos imports circulares**
+   - 🏗️ **Base definido apropiadamente** - Estructura de imports optimizada
+   - 🔄 **Organización clara** - Arquitectura sin dependencias circulares
+
+
 ## 📁 Estructura del Proyecto
 
 ```
