@@ -13,18 +13,22 @@ API REST para sistema de compra de entradas de cine desarrollada con FastAPI y P
 
 ### Usar:
 
-### 1. **SQLAlchemy 2.0 moderno**
+### 1. @asynccontextmanager con lifespan - Patrón moderno de FastAPI
+- El mecanismo (@app.on_event) está deprecado
+- Se recomienda usar el parámetro lifespan del objeto FastAPI, que funciona con un @asynccontextmanager.
+
+### 2. **SQLAlchemy 2.0 moderno**
    - ✅ **Mejores tipos** - Sistema de tipos más robusto y expresivo
    - ⚡ **Mejor rendimiento** - Optimizaciones significativas en el ORM
 
-### 2. **Type safety completa**
+### 3. **Type safety completa**
    - 🔍 **MyPy integration** - Verificación estática de tipos integrada
 
-### 3. **Timezone aware**
+### 4. **Timezone aware**
    - 🌍 **Timestamps conscientes** - Manejo adecuado de zonas horarias
    - ⏰ **UTC por defecto** - Almacenamiento consistente en UTC
 
-### 4. **Menos imports circulares**
+### 5. **Menos imports circulares**
    - 🏗️ **Base definido apropiadamente** - Estructura de imports optimizada
    - 🔄 **Organización clara** - Arquitectura sin dependencias circulares
 
