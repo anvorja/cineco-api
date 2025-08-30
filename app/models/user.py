@@ -2,10 +2,12 @@
 import enum
 from sqlalchemy import Enum, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import List
+from typing import List, TYPE_CHECKING
 
 from .base import BaseModel
 
+if TYPE_CHECKING:
+    from .purchase import Purchase
 
 class UserRole(str, enum.Enum):
     """User role enumeration"""
@@ -38,10 +40,8 @@ class User(BaseModel):
         Enum(UserRole), default=UserRole.CUSTOMER, nullable=False
     )
 
-    # Relationships (TYPE_CHECKING para evitar circular imports)
-    if False:  # TYPE_CHECKING
-        from .purchase import Purchase
-        purchases: Mapped[List["Purchase"]] = relationship(back_populates="user")
+    # Relationships - usa string type annotation
+    purchases: Mapped[List["Purchase"]] = relationship(back_populates="user")
 
     @property
     def full_name(self) -> str:

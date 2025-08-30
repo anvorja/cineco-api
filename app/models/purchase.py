@@ -2,9 +2,13 @@
 import enum
 from sqlalchemy import String, Integer, Float, ForeignKey, JSON, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, TYPE_CHECKING
 
 from .base import BaseModel
+
+if TYPE_CHECKING:
+    from .user import User
+    from .movie import Movie
 
 
 class PurchaseStatus(str, enum.Enum):
