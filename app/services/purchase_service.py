@@ -5,9 +5,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from fastapi import HTTPException, status
 
-from app.models import Purchase, Ticket, Movie, User, PurchaseStatus, TicketStatus
+from app.models import Purchase, Ticket, Movie, PurchaseStatus, TicketStatus
 from app.schemas.purchase import PurchaseCreate, PaymentInfo
-from app.utils.helpers import generate_ticket_code, mask_card_number
+from app.utils.helpers import generate_ticket_code
 
 
 class PurchaseService:

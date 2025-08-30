@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.api.dependencies import get_current_user, get_current_admin
+from app.api.dependencies import get_current_user
 from app.services.purchase_service import PurchaseService
 from app.services.email_service import EmailService
 from app.schemas.purchase import PurchaseCreate, PurchaseResponse, PurchaseListResponse
