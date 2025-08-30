@@ -18,16 +18,13 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Startup & shutdown lifecycle"""
     logger.info("🚀 Starting Cinema Ticket API...")
 
     try:
-        # Test database connection
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
         logger.info("✅ Database connection successful")
 
-        # Create or verify tables
         create_tables()
         logger.info("✅ Database tables created/verified")
 
@@ -36,13 +33,11 @@ async def lifespan(app: FastAPI):
         raise
 
     logger.info("🎬 Cinema Ticket API started successfully!")
-    yield  # <-- Aquí la app queda corriendo
+    yield
 
-    # Shutdown
     logger.info("🛑 Shutting down Cinema Ticket API...")
 
 
-# Create FastAPI app
 app = FastAPI(
     title="🎬 Cinema Ticket API",
     description="API REST para sistema de compra de entradas de cine",
