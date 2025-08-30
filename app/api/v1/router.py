@@ -1,6 +1,6 @@
 # app/api/v1/router.py
 from fastapi import APIRouter
-from .endpoints import auth, movies, admin
+from .endpoints import auth, movies, admin, purchases
 
 # Create main API router
 api_router = APIRouter(
@@ -25,6 +25,17 @@ api_router.include_router(
     prefix="/movies",
     tags=["🎬 Movies"]
 )
+
+# Include purchases router (protected endpoints)
+api_router.include_router(
+    purchases.router,
+    prefix="/purchases",
+    tags=["🎫 Purchases"],
+    responses={
+        401: {"description": "Authentication required"}
+    }
+)
+
 
 # Include admin router (protected endpoints)
 api_router.include_router(

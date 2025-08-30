@@ -1,4 +1,4 @@
-# app/api/v1/endpoints/auth.py
+# app/api/v1/endpoints/auth.py# app/api/v1/endpoints/auth.py
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 

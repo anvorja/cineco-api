@@ -1,4 +1,4 @@
-# app/models/purchase.py
+# app/models/purchases.py
 import enum
 from sqlalchemy import String, Integer, Float, ForeignKey, JSON, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
