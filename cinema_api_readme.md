@@ -351,7 +351,7 @@ Una vez ejecutándose el servidor, accede a:
 
 ## 🔧 Configuración Pydantic v2
 
-```python
+```
 from pydantic import BaseSettings
 
 class Settings(BaseSettings):
@@ -364,6 +364,8 @@ class Settings(BaseSettings):
         env_file = ".env"
         env_file_encoding = 'utf-8'
 ```
+
+#### En Pydantic 2.x, el parámetro regex fue reemplazado por *pattern*
 
 ## 🐳 Docker
 
