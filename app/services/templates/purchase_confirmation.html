@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de Compra - Cinema Tickets</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #e50914 0%, #b81d24 100%);
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .greeting {
+            font-size: 18px;
+            color: #e50914;
+            margin-bottom: 20px;
+        }
+        .details {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 25px 0;
+            border-left: 4px solid #e50914;
+        }
+        .details h2 {
+            color: #e50914;
+            margin-top: 0;
+            font-size: 20px;
+        }
+        .detail-item {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        .detail-label {
+            font-weight: bold;
+            width: 140px;
+            color: #555;
+        }
+        .detail-value {
+            color: #333;
+        }
+        .movie-info {
+            background: linear-gradient(45deg, #f0f0f0, #ffffff);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #e0e0e0;
+        }
+        .tickets-section {
+            background-color: #fff5f5;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px dashed #e50914;
+        }
+        .ticket-item {
+            background-color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ticket-code {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #e50914;
+            font-size: 16px;
+        }
+        .qr-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 25px;
+            background: linear-gradient(45deg, #f8f8f8, #ffffff);
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        .qr-section h3 {
+            color: #e50914;
+            margin-bottom: 15px;
+        }
+        .qr-code {
+            margin: 15px 0;
+        }
+        .payment-info {
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+        }
+        .footer {
+            background-color: #333;
+            color: #fff;
+            padding: 25px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .footer a {
+            color: #e50914;
+            text-decoration: none;
+        }
+        .button {
+            display: inline-block;
+            background-color: #e50914;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #b81d24;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+        }
+        .status-confirmed {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .price-total {
+            font-size: 20px;
+            font-weight: bold;
+            color: #e50914;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🎬 CINEMA TICKETS</div>
+            <h1>¡Tu entrada está confirmada!</h1>
+        </div>
+
+        <div class="content">
+            <div class="greeting">
+                ¡Hola {{ customer_name }}!
+            </div>
+
+            <p>¡Gracias por tu compra! Tu reserva para la película ha sido <span class="status-confirmed">CONFIRMADA</span>. A continuación encontrarás los detalles de tu función.</p>
+
+            <div class="movie-info">
+                <h2>🎬 Información de la Película</h2>
+                <div class="detail-item">
+                    <span class="detail-label">Película:</span>
+                    <span class="detail-value"><strong>{{ movie_title }}</strong></span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Género:</span>
+                    <span class="detail-value">{{ movie_genre }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Duración:</span>
+                    <span class="detail-value">{{ movie_duration }} minutos</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Clasificación:</span>
+                    <span class="detail-value">{{ movie_rating }}</span>
+                </div>
+            </div>
+
+            <div class="details">
+                <h2>📋 Detalles de tu Compra</h2>
+                <div class="detail-item">
+                    <span class="detail-label">Orden #:</span>
+                    <span class="detail-value">#{{ purchase_id }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Fecha:</span>
+                    <span class="detail-value">{{ purchase_date }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Hora:</span>
+                    <span class="detail-value">{{ purchase_time }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Cantidad:</span>
+                    <span class="detail-value">{{ quantity }} entrada(s)</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Total:</span>
+                    <span class="detail-value price-total">{{ total_amount }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Estado:</span>
+                    <span class="detail-value status-confirmed">{{ status }}</span>
+                </div>
+            </div>
+
+            <div class="tickets-section">
+                <h3>🎫 Tus Entradas</h3>
+                <p>Presenta estos códigos en taquilla:</p>
+                {% for ticket in tickets %}
+                <div class="ticket-item">
+                    <div>
+                        <div class="ticket-code">{{ ticket.code }}</div>
+                        <small>Asiento: {{ ticket.seat }}</small>
+                    </div>
+                    <div>
+                        <span style="color: #28a745; font-weight: bold;">{{ ticket.status }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="payment-info">
+                <h3>💳 Información de Pago</h3>
+                <div class="detail-item">
+                    <span class="detail-label">Tarjeta:</span>
+                    <span class="detail-value">**** **** **** {{ payment_last_four }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Transacción:</span>
+                    <span class="detail-value">{{ transaction_id }}</span>
+                </div>
+            </div>
+
+            <div class="qr-section">
+                <h3>📱 Código QR de Verificación</h3>
+                <p>Presenta este código QR en taquilla:</p>
+                <div class="qr-code">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ qr_code_data }}"
+                         alt="Código QR de reserva"
+                         style="width: 150px; height: 150px; border: 2px solid #ddd; border-radius: 8px;">
+                </div>
+                <p><small style="font-family: monospace; color: #666;">{{ qr_code_data }}</small></p>
+            </div>
+
+            <div class="highlight">
+                <h4>📋 Instrucciones Importantes:</h4>
+                <ul>
+                    <li>Llega al menos <strong>20 minutos antes</strong> del inicio de la función</li>
+                    <li>Presenta tus códigos de entrada en la taquilla del cine</li>
+                    <li>Los códigos son <strong>únicos y no transferibles</strong></li>
+                    <li>Conserva este email como comprobante de compra</li>
+                    <li>En caso de cancelación, contacta nuestro soporte</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center;">
+                <a href="#" class="button">Ver mis reservas</a>
+            </div>
+
+            <p>Si tienes alguna pregunta, no dudes en contactarnos en <a href="mailto:{{ support_email }}">{{ support_email }}</a></p>
+
+            <p><strong>¡Disfruta de la película! 🍿</strong></p>
+
+            <p>Atentamente,<br>El equipo de <strong>Cinema Tickets</strong></p>
+        </div>
+
+        <div class="footer">
+            <p><strong>© 2024 Cinema Tickets. Todos los derechos reservados.</strong></p>
+            <p>Este es un mensaje automático, por favor no respondas a esta dirección de correo.</p>
+            <p><small>Si recibiste este correo por error, por favor ignóralo.</small></p>
+            <p>
+                <a href="mailto:{{ support_email }}">Soporte</a> |
+                <a href="#">Política de Privacidad</a> |
+                <a href="#">Términos de Servicio</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

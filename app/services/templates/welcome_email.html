@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido a Cinema Tickets</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            padding: 40px 20px;
+            text-align: center;
+            color: white;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .logo {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .welcome-message {
+            font-size: 18px;
+            color: #2575fc;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .account-details {
+            background-color: #f8f9ff;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 25px 0;
+            border-left: 4px solid #2575fc;
+        }
+        .account-details h3 {
+            color: #2575fc;
+            margin-top: 0;
+        }
+        .detail-item {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        .detail-label {
+            font-weight: bold;
+            width: 140px;
+            color: #555;
+        }
+        .detail-value {
+            color: #333;
+        }
+        .features {
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        .features h3 {
+            color: #2575fc;
+            margin-top: 0;
+        }
+        .features ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .features li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+        .cta-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 25px;
+            background: linear-gradient(45deg, #fff5f5, #ffffff);
+            border-radius: 8px;
+        }
+        .button {
+            display: inline-block;
+            background: linear-gradient(45deg, #e50914, #b81d24);
+            color: white;
+            padding: 15px 35px;
+            text-decoration: none;
+            border-radius: 6px;
+            margin: 10px;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+        }
+        .button.secondary {
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+        }
+        .footer {
+            background-color: #333;
+            color: #fff;
+            padding: 25px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .footer a {
+            color: #2575fc;
+            text-decoration: none;
+        }
+        .emoji {
+            font-size: 24px;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🎬 CINEMA TICKETS</div>
+            <h1>¡Bienvenido a nuestro cine!</h1>
+        </div>
+
+        <div class="content">
+            <div class="welcome-message">
+                ¡Hola {{ customer_name }}! <span class="emoji">🎉</span>
+            </div>
+
+            <p>¡Bienvenido a <strong>Cinema Tickets</strong>! Tu cuenta ha sido creada exitosamente y ya puedes disfrutar de todas nuestras funcionalidades.</p>
+
+            <div class="account-details">
+                <h3>📋 Detalles de tu Cuenta</h3>
+                <div class="detail-item">
+                    <span class="detail-label">Email:</span>
+                    <span class="detail-value">{{ email }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Nombre:</span>
+                    <span class="detail-value">{{ customer_name }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Teléfono:</span>
+                    <span class="detail-value">{{ phone }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Fecha de Registro:</span>
+                    <span class="detail-value">{{ registration_date }} a las {{ registration_time }}</span>
+                </div>
+            </div>
+
+            <div class="features">
+                <h3>🌟 ¿Qué puedes hacer ahora?</h3>
+                <ul>
+                    <li><strong>Explorar cartelera:</strong> Descubre todas las películas disponibles</li>
+                    <li><strong>Búsqueda avanzada:</strong> Filtra por género, precio, clasificación y más</li>
+                    <li><strong>Comprar entradas:</strong> Proceso rápido y seguro de compra</li>
+                    <li><strong>Historial de compras:</strong> Revisa todas tus transacciones</li>
+                    <li><strong>Confirmaciones por email:</strong> Recibe todos los detalles de tus compras</li>
+                    <li><strong>Códigos únicos:</strong> Cada entrada tiene un código de verificación</li>
+                </ul>
+            </div>
+
+            <div class="cta-section">
+                <h3>🎯 ¡Comienza tu experiencia cinematográfica!</h3>
+                <p>Explora nuestra cartelera y encuentra tu próxima película favorita</p>
+                <a href="#" class="button">Ver Cartelera</a>
+                <a href="#" class="button secondary">Mi Perfil</a>
+            </div>
+
+            <div style="background-color: #fff8dc; padding: 20px; border-radius: 8px; border-left: 4px solid #ffa500; margin: 25px 0;">
+                <h4>💡 Consejos para tu primera compra:</h4>
+                <ul style="margin: 0; padding-left: 20px;">
+                    <li>Revisa la disponibilidad antes de seleccionar cantidad</li>
+                    <li>Verifica tus datos de pago cuidadosamente</li>
+                    <li>Guarda el email de confirmación</li>
+                    <li>Llega 20 minutos antes de la función</li>
+                </ul>
+            </div>
+
+            <p>Si tienes alguna pregunta o necesitas asistencia, nuestro equipo de soporte está disponible en <a href="mailto:{{ support_email }}">{{ support_email }}</a></p>
+
+            <p style="text-align: center; font-size: 18px;"><strong>¡Disfruta del cine! 🍿🎬</strong></p>
+
+            <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+
+            <p>Atentamente,<br>
+            <strong>El equipo de Cinema Tickets</strong><br>
+            <em>Tu experiencia cinematográfica comienza aquí</em></p>
+        </div>
+
+        <div class="footer">
+            <p><strong>© 2024 Cinema Tickets. Todos los derechos reservados.</strong></p>
+            <p>Este es un mensaje automático de confirmación de registro.</p>
+            <p><small>Si recibiste este correo por error, por favor ignóralo.</small></p>
+            <p>
+                <a href="mailto:{{ support_email }}">Soporte</a> |
+                <a href="#">Política de Privacidad</a> |
+                <a href="#">Términos de Servicio</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,7 +1,7 @@
 # app/core/config.py
 from pydantic import field_validator
 from pydantic_settings import BaseSettings
-from typing import Optional, List, Any
+from typing import List, Any
 
 
 class Settings(BaseSettings):
@@ -13,7 +13,6 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str
 
-    # JWT Settings (para Day 3)
     JWT_SECRET: str
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = 30
@@ -25,14 +24,11 @@ class Settings(BaseSettings):
         "http://localhost:8000",
     ]
 
-    # External Services
-    CLOUDINARY_CLOUD_NAME: Optional[str] = None
-    CLOUDINARY_API_KEY: Optional[str] = None
-    CLOUDINARY_API_SECRET: Optional[str] = None
-
-    # Email Settings
-    SENDGRID_API_KEY: Optional[str] = None
-    FROM_EMAIL: str = "noreply@cinema.com"
+    # Email
+    EMAIL_HOST: str = "smtp.gmail.com"
+    EMAIL_PORT: int = 465
+    EMAIL_USER: str
+    EMAIL_APP_PASSWORD: str
 
     # App Settings
     DEBUG: bool = True

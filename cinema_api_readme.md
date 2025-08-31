@@ -367,6 +367,40 @@ class Settings(BaseSettings):
 
 #### En Pydantic 2.x, el parámetro regex fue reemplazado por *pattern*
 
+
+## 🚨 Envío de Emails para notificaciones
+### Puertos SMTP y Protocolos:
+
+### **Puerto 465 (SSL Directo) - RECOMENDADO**
+```python
+async with aiosmtplib.SMTP(
+    hostname="smtp.gmail.com",
+    port=465,
+    use_tls=True  # ✅ SSL desde conexión inicial
+) as smtp:
+    await smtp.login(user, password)
+    await smtp.send_message(msg)
+```
+
+### **Puerto 587 (STARTTLS)**
+```python
+async with aiosmtplib.SMTP(
+    hostname="smtp.gmail.com",
+    port=587
+) as smtp:
+    await smtp.starttls()  # ✅ Upgrade a TLS después de conectar
+    await smtp.login(user, password)
+    await smtp.send_message(msg)
+```
+
+## ⚠️ Error Común: `[SSL: WRONG_VERSION_NUMBER]`
+
+**Causa:** Usar configuración SSL incorrecta para el puerto.
+
+**Solución:** 
+- **Puerto 465** → `use_tls=True` (sin `starttls()`)
+- **Puerto 587** → `starttls()` (sin `use_tls=True`)
+
 ## 🐳 Docker
 
 ### Desarrollo
