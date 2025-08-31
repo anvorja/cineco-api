@@ -419,11 +419,23 @@ docker-compose -f docker-compose.prod.yml up -d
 
 Para poblar la base de datos con datos de prueba:
 
+### Alembic
+
+```
+alembic init migrations
+```
+
+```
+alembic revision --autogenerate -m "Initial schema with ..."
+```
+```
+alembic upgrade head
+```
 ```bash
 python db/seed_script.py
 ```
 
-Esto creará:
+Esto creará la data de seed_script:
 
 - Usuario admin (admin@cinema.com / admin123)
 - Películas de ejemplo

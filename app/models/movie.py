@@ -86,3 +86,18 @@ class Movie(BaseModel):
             self.detail_1_url,
             self.detail_2_url
         ]
+
+    def can_purchase(self, quantity: int) -> bool:
+        """
+        Verificar si se pueden comprar la cantidad de tickets solicitada.
+
+        Args:
+            quantity: Número de tickets que se quieren comprar
+
+        Returns:
+            True si se pueden comprar, False caso contrario
+        """
+        return (
+                self.is_active and
+                self.available_tickets >= quantity > 0
+        )
