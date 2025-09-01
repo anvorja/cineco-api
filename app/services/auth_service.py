@@ -1,6 +1,7 @@
 # app/services/auth_service.py
 import logging
-from typing import Optional
+from typing import Optional, Dict, Any
+from datetime import datetime
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
@@ -30,21 +31,18 @@ class AuthService:
         Raises:
             HTTPException: If email already exists or validation fails
         """
-        # Validate email format
         if not validate_email(user_data.email):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid email format"
             )
 
-        # Validate phone format
         if not validate_phone(user_data.phone):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid phone format. Use Colombian format: 3XXXXXXXXX"
             )
 
-        # Check if email already exists
         existing_user = db.query(User).filter(User.email == user_data.email).first()
         if existing_user:
             raise HTTPException(
@@ -52,24 +50,21 @@ class AuthService:
                 detail="Email already registered"
             )
 
-        # Hash password
         hashed_password = get_password_hash(user_data.password)
 
-        # Create user
         user = User(
             email=user_data.email,
             phone=user_data.phone,
             first_name=user_data.first_name,
             last_name=user_data.last_name,
             password_hash=hashed_password,
-            role=UserRole.CUSTOMER  # Default role
+            role=UserRole.CUSTOMER  # Por defecto
         )
 
         db.add(user)
         db.commit()
         db.refresh(user)
 
-        # Send welcome email (don't fail registration if email fails)
         try:
             await EmailService.send_welcome_email(user)
         except Exception as e:
@@ -132,6 +127,37 @@ class AuthService:
             "access_token": access_token,
             "token_type": "bearer",
             "user": user
+        }
+
+    @staticmethod
+    def logout_user(user: User) -> Dict[str, Any]:
+        """
+        Handle user logout.
+
+        En JWT stateless, no hay mucho que hacer en el servidor,
+        pero podemos logging y otros side effects.
+
+        Args:
+            user: Usuario que está cerrando sesión
+
+        Returns:
+            Dictionary with logout confirmation
+        """
+        # Log logout event
+        logout_time = datetime.now()
+        logger.info(f"User {user.email} logged out successfully at {logout_time}")
+
+        # En una implementación más robusta podrías:
+        # 1. Agregar el token a una blacklist
+        # 2. Limpiar refresh tokens
+        # 3. Invalidar sesiones activas
+        # 4. Notificar a otros servicios
+
+        return {
+            "message": "Sesión cerrada exitosamente",
+            "user_id": user.id,
+            "logout_time": logout_time,
+            "status": "success"
         }
 
     @staticmethod

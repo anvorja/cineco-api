@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.services.auth_service import AuthService
-from app.schemas.auth import UserRegister, UserLogin, Token, UserResponse
+from app.schemas.auth import UserRegister, UserLogin, Token, UserResponse, LogoutResponse
 from app.api.dependencies import get_current_user
 from app.models import User
 
@@ -49,6 +49,34 @@ async def login(
         "access_token": result["access_token"],
         "token_type": result["token_type"]
     }
+
+
+@router.post("/logout", response_model=LogoutResponse)
+async def logout(
+        current_user: User = Depends(get_current_user)
+):
+    """
+    Cerrar sesión del usuario actual.
+
+    En implementaciones JWT stateless, el logout se maneja en el cliente
+    eliminando el token. Este endpoint confirma la acción y puede usarse
+    para logging/auditoría.
+
+    Requiere un token JWT válido en el encabezado Authorization.
+    """
+    # En JWT stateless, no hay mucho que hacer en el servidor
+    # El token seguirá siendo válido hasta que expire
+
+    # TODO: Para una implementación más robusta:
+    # 1. Mantener una blacklist de tokens
+    # 2. Acortar el tiempo de expiración
+    # 3. Usar refresh tokens
+
+    return LogoutResponse(
+        message="Sesión cerrada exitosamente",
+        user_id=current_user.id,
+        logout_time=None  # Se llenará automáticamente con la fecha actual
+    )
 
 
 @router.get("/me", response_model=UserResponse)

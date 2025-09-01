@@ -1,4 +1,6 @@
 # app/schemas/auth.py
+from datetime import datetime
+from typing import Optional
 from pydantic import BaseModel, Field, EmailStr
 
 class UserRegister(BaseModel):
@@ -51,6 +53,22 @@ class Token(BaseModel):
         }
     }
 
+
+class LogoutResponse(BaseModel):
+    """Esquema para respuesta de logout"""
+    message: str = Field(..., description="Mensaje de confirmación")
+    user_id: int = Field(..., description="ID del usuario que cerró sesión")
+    logout_time: Optional[datetime] = Field(default_factory=datetime.now, description="Tiempo de cierre de sesión")
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "message": "Sesión cerrada exitosamente",
+                "user_id": 1,
+                "logout_time": "2024-09-03T14:30:00"
+            }
+        }
+    }
 
 class UserResponse(BaseModel):
     """Esquema para respuesta con datos de usuario"""
