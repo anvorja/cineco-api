@@ -53,7 +53,7 @@ api_router.include_router(
 api_router.include_router(
     calendar.router,
     prefix="/calendar",
-    tags=["📅 Programación y Calendarios"],
+    tags=["📅 Showtimes & Schedules"],
     responses={404: {"description": "Información no encontrada"}}
 )
 

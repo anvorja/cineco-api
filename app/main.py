@@ -101,7 +101,7 @@ async def logging_middleware(request: Request, call_next):
 app.include_router(api_router)
 
 # Health check endpoints
-@app.get("/", tags=["Health"])
+@app.get("/", tags=["Root"])
 async def root():
     """Root endpoint - API status"""
     return {
@@ -110,7 +110,7 @@ async def root():
         "version": settings.VERSION
     }
 
-@app.get("/health", tags=["Health"])
+@app.get("/health", tags=["💻 Health"])
 async def health_check():
     """Verificación detallada de salud con prueba de conexión a la base de datos"""
     try:
