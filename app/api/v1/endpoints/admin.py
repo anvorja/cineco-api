@@ -21,16 +21,13 @@ from app.models.theater import Theater
 router = APIRouter()
 
 
-# ======================
-# 🎬 Movie Management
-# ======================
 @router.post("/movies", response_model=MovieResponse, status_code=status.HTTP_201_CREATED)
 async def create_movie(
     movie_data: MovieCreate,
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """Crear nueva película (admin only)"""
+    """Crear nueva película (solo admin)"""
     movie = MovieService.create_movie(db=db, movie_data=movie_data)
     return MovieResponse.from_orm(movie)
 
@@ -45,7 +42,7 @@ async def get_all_movies_admin(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """Obtener todas las películas incluyendo inactivas (admin only)"""
+    """Obtener todas las películas incluyendo inactivas"""
     movies = MovieService.get_movies(
         db=db,
         skip=skip,
@@ -64,7 +61,7 @@ async def get_movie_admin(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """Obtener detalles de película incluyendo inactivas (admin only)"""
+    """Obtener detalles de película incluyendo inactivas"""
     movie = MovieService.get_movie_by_id(db=db, movie_id=movie_id, include_inactive=True)
     if not movie:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Película no encontrada")
@@ -78,7 +75,7 @@ async def update_movie(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """Actualizar información de película (admin only)"""
+    """Actualizar información de película"""
     movie = MovieService.update_movie(db=db, movie_id=movie_id, movie_data=movie_data)
     if not movie:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Película no encontrada")
@@ -91,7 +88,7 @@ async def toggle_movie_status(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """Alternar estado activo/inactivo de película (admin only)"""
+    """Alternar estado activo/inactivo de película"""
     movie = MovieService.toggle_movie_status(db=db, movie_id=movie_id)
     if not movie:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Película no encontrada")
@@ -106,7 +103,7 @@ async def create_theater(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """Crear nuevo teatro (admin only)"""
+    """Crear nuevo teatro"""
     # Verificar que no existe
     existing = db.query(Theater).filter(Theater.name == theater_data.name).first()
     if existing:
@@ -136,7 +133,7 @@ async def get_all_theaters_admin(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """Obtener todos los teatros (admin only)"""
+    """Obtener todos los teatros"""
     query = db.query(Theater)
 
     if not include_inactive:
@@ -153,7 +150,7 @@ async def create_movie_showtimes(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """Crear horarios para una película específica (admin only)"""
+    """Crear horarios para una película específica"""
     created_showtimes = MovieService.create_showtimes_for_movie(
         db=db,
         movie_id=movie_id,
@@ -177,7 +174,7 @@ async def get_all_users(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """Obtener todos los usuarios del sistema (admin only)"""
+    """Obtener todos los usuarios del sistema"""
     query = db.query(User)
 
     if not include_inactive:
@@ -203,7 +200,7 @@ async def get_user_admin(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """Obtener detalles de usuario (admin only)"""
+    """Obtener detalles de usuario"""
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
@@ -216,7 +213,7 @@ async def toggle_user_status(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """Alternar estado activo/inactivo de usuario (admin only)"""
+    """Alternar estado activo/inactivo de usuario"""
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
@@ -247,7 +244,7 @@ async def get_all_purchases(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """Obtener todas las compras del sistema (admin only)"""
+    """Obtener todas las compras del sistema"""
     purchases = PurchaseService.get_all_purchases(
         db=db,
         skip=skip,
@@ -267,7 +264,7 @@ async def get_purchases_by_movie(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """Obtener todas las compras para una película específica (admin only)"""
+    """Obtener todas las compras para una película específica"""
     purchases = PurchaseService.get_all_purchases(
         db=db,
         skip=skip,
@@ -285,7 +282,7 @@ async def get_purchases_by_user(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """Obtener todas las compras para un usuario específico (admin only)"""
+    """Obtener todas las compras para un usuario específico"""
     purchases = PurchaseService.get_all_purchases(
         db=db,
         skip=skip,
@@ -300,5 +297,5 @@ async def get_sales_report(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """Obtener reporte consolidado de ventas (admin only)"""
+    """Obtener reporte consolidado de ventas"""
     return PurchaseService.get_sales_report(db=db)

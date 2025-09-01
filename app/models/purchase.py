@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class PurchaseStatus(str, enum.Enum):
-    """Purchase status enumeration"""
+    """Enumeración de estados de la compra"""
     PENDING = "pending"
     CONFIRMED = "confirmed"
     CANCELLED = "cancelled"
@@ -20,7 +20,7 @@ class PurchaseStatus(str, enum.Enum):
 
 
 class TicketStatus(str, enum.Enum):
-    """Ticket status enumeration"""
+    """Enumeración de estados del boleto"""
     ACTIVE = "active"
     USED = "used"
     CANCELLED = "cancelled"
@@ -28,15 +28,15 @@ class TicketStatus(str, enum.Enum):
 
 class Purchase(BaseModel):
     """
-    Purchase model representing a ticket purchase transaction.
+    Modelo de compra que representa una transacción de boletos.
 
-    Attributes:
-        user_id: ID of the user who made the purchase
-        movie_id: ID of the movie for which tickets were purchased
-        quantity: Number of tickets purchased
-        total_amount: Total amount paid
-        payment_info: Payment information (JSON with masked card details)
-        status: Purchase status (pending, confirmed, cancelled, refunded)
+    Atributos:
+        user_id: ID del usuario que realizó la compra
+        movie_id: ID de la película para la cual se compraron los boletos
+        quantity: Cantidad de boletos comprados
+        total_amount: Monto total pagado
+        payment_info: Información de pago (JSON con detalles de tarjeta enmascarados)
+        status: Estado de la compra (pending, confirmed, cancelled, refunded)
     """
     __tablename__ = "purchases"
 
@@ -56,7 +56,7 @@ class Purchase(BaseModel):
         index=True
     )
 
-    # Relationships
+    # Relaciones
     user: Mapped["User"] = relationship(back_populates="purchases")
     movie: Mapped["Movie"] = relationship(back_populates="purchases")
     tickets: Mapped[List["Ticket"]] = relationship(
@@ -66,7 +66,7 @@ class Purchase(BaseModel):
 
     @property
     def is_confirmed(self) -> bool:
-        """Check if purchase is confirmed"""
+        """Verifica si la compra está confirmada"""
         return self.status == PurchaseStatus.CONFIRMED
 
     def __repr__(self) -> str:
@@ -75,13 +75,13 @@ class Purchase(BaseModel):
 
 class Ticket(BaseModel):
     """
-    Individual ticket model.
+    Modelo de un boleto individual.
 
-    Attributes:
-        purchase_id: ID of the associated purchase
-        ticket_code: Unique ticket code for validation
-        seat_number: Seat assignment (GENERAL-X for MVP)
-        status: Ticket status (active, used, cancelled)
+    Atributos:
+        purchase_id: ID de la compra asociada
+        ticket_code: Código único del boleto para validación
+        seat_number: Asignación de asiento (GENERAL-X para MVP)
+        status: Estado del boleto (active, used, cancelled)
     """
     __tablename__ = "tickets"
 
@@ -99,12 +99,12 @@ class Ticket(BaseModel):
         index=True
     )
 
-    # Relationships
+    # Relaciones
     purchase: Mapped["Purchase"] = relationship(back_populates="tickets")
 
     @property
     def is_active(self) -> bool:
-        """Check if ticket is active"""
+        """Verifica si el boleto está activo"""
         return self.status == TicketStatus.ACTIVE
 
     def __repr__(self) -> str:

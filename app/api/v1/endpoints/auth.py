@@ -17,15 +17,15 @@ async def register(
         db: Session = Depends(get_db)
 ):
     """
-    Register a new customer account.
+    Registrar una nueva cuenta de cliente.
 
-    - **email**: Valid email address (unique)
-    - **phone**: Colombian phone number (3XXXXXXXXX format)
-    - **first_name**: User's first name
-    - **last_name**: User's last name
-    - **password**: Password (minimum 6 characters)
+    - **email**: Dirección de correo válida (única)
+    - **phone**: Número de teléfono colombiano (formato 3XXXXXXXXX)
+    - **first_name**: Nombre del usuario
+    - **last_name**: Apellido del usuario
+    - **password**: Contraseña (mínimo 6 caracteres)
 
-    Returns the created user information (without password).
+    Retorna la información del usuario creado (sin contraseña).
     """
     user = await AuthService.register_user(db, user_data)
     return UserResponse.from_orm(user)
@@ -37,12 +37,12 @@ async def login(
         db: Session = Depends(get_db)
 ):
     """
-    Authenticate user and get access token.
+    Autenticar al usuario y obtener un token de acceso.
 
-    - **email**: Registered email address
-    - **password**: User password
+    - **email**: Correo electrónico registrado
+    - **password**: Contraseña del usuario
 
-    Returns JWT access token for API authentication.
+    Retorna un token JWT de acceso para autenticación en la API.
     """
     result = AuthService.login_user(db, login_data)
     return {
@@ -56,9 +56,9 @@ async def get_current_user_info(
         current_user: User = Depends(get_current_user)
 ):
     """
-    Get current authenticated user information.
+    Obtener la información del usuario autenticado.
 
-    Requires valid JWT token in Authorization header.
+    Requiere un token JWT válido en el encabezado Authorization.
     """
     return UserResponse.from_orm(current_user)
 
@@ -68,9 +68,9 @@ async def verify_token(
         current_user: User = Depends(get_current_user)
 ):
     """
-    Verify if JWT token is valid.
+    Verificar si el token JWT es válido.
 
-    Returns user ID and email if token is valid.
+    Retorna el ID, correo y rol del usuario si el token es válido.
     """
     return {
         "valid": True,

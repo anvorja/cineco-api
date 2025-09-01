@@ -63,7 +63,7 @@ app = FastAPI(
     },
     docs_url="/docs",
     redoc_url="/redoc",
-    lifespan=lifespan  # Aquí se conecta el lifespan
+    lifespan=lifespan
 )
 
 # CORS Middleware
@@ -98,7 +98,6 @@ async def logging_middleware(request: Request, call_next):
     return response
 
 
-# Include API router (aquí se conectan los endpoints de auth)
 app.include_router(api_router)
 
 # Health check endpoints
@@ -113,7 +112,7 @@ async def root():
 
 @app.get("/health", tags=["Health"])
 async def health_check():
-    """Detailed health check with database connection test"""
+    """Verificación detallada de salud con prueba de conexión a la base de datos"""
     try:
         with Session(engine) as db_session:
             db_session.execute(text("SELECT 1"))
@@ -129,7 +128,6 @@ async def health_check():
         "database": db_status
     }
 
-# Exception handlers
 @app.exception_handler(500)
 async def internal_server_error_handler(_request: Request, exc: Exception):
     logger.error(f"Internal server error: {exc}")

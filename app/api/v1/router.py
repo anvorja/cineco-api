@@ -11,7 +11,6 @@ api_router = APIRouter(
     }
 )
 
-# Include authentication router
 api_router.include_router(
     auth.router,
     prefix="/auth",
@@ -19,14 +18,12 @@ api_router.include_router(
     responses={401: {"description": "Authentication failed"}}
 )
 
-# Include movies router (public endpoints)
 api_router.include_router(
     movies.router,
     prefix="/movies",
     tags=["🎬 Movies"]
 )
 
-# Include theaters router (public endpoints)
 api_router.include_router(
     theaters.router,
     prefix="/theaters",
@@ -34,7 +31,6 @@ api_router.include_router(
     responses={404: {"description": "Theater not found"}}
 )
 
-# Include purchases router (protected endpoints)
 api_router.include_router(
     purchases.router,
     prefix="/purchases",
@@ -44,8 +40,6 @@ api_router.include_router(
     }
 )
 
-
-# Include admin router (protected endpoints)
 api_router.include_router(
     admin.router,
     prefix="/admin",
@@ -55,7 +49,6 @@ api_router.include_router(
         403: {"description": "Admin privileges required"}
     }
 )
-
 
 api_router.include_router(
     calendar.router,

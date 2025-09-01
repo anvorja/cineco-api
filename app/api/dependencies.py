@@ -16,17 +16,17 @@ async def get_current_user(
         db: Session = Depends(get_db)
 ) -> User:
     """
-    Get current authenticated user from JWT token.
+    Obtener el usuario autenticado actual a partir del token JWT.
 
     Args:
-        credentials: HTTP Bearer credentials
-        db: Database session
+        credentials: Credenciales HTTP Bearer
+        db: Sesión de base de datos
 
     Returns:
-        Current user object
+        Objeto del usuario autenticado
 
     Raises:
-        HTTPException: If token is invalid or user not found
+        HTTPException: Si el token no es válido o el usuario no existe
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -34,12 +34,12 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-    # Verify token
+    # Verificar el token
     user_email = verify_token(credentials.credentials)
     if user_email is None:
         raise credentials_exception
 
-    # Get user from database
+    # Buscar usuario en la base de datos
     user = db.query(User).filter(User.email == user_email).first()
     if user is None or not user.is_active:
         raise credentials_exception
@@ -51,16 +51,16 @@ async def get_current_admin(
         current_user: User = Depends(get_current_user)
 ) -> User:
     """
-    Get current user and verify admin role.
+    Obtener el usuario actual y verificar si tiene rol de administrador.
 
     Args:
-        current_user: Current authenticated user
+        current_user: Usuario autenticado actual
 
     Returns:
-        Current admin user
+        Usuario administrador actual
 
     Raises:
-        HTTPException: If user is not admin
+        HTTPException: Si el usuario no es administrador
     """
     if not current_user.is_admin:
         raise HTTPException(
@@ -74,16 +74,16 @@ async def get_current_active_user(
         current_user: User = Depends(get_current_user)
 ) -> User:
     """
-    Get current user and verify is active.
+    Obtener el usuario actual y verificar si está activo.
 
     Args:
-        current_user: Current authenticated user
+        current_user: Usuario autenticado actual
 
     Returns:
-        Current active user
+        Usuario activo actual
 
     Raises:
-        HTTPException: If user is not active
+        HTTPException: Si el usuario no está activo
     """
     if not current_user.is_active:
         raise HTTPException(

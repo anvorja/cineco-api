@@ -10,22 +10,22 @@ if TYPE_CHECKING:
     from .purchase import Purchase
 
 class UserRole(str, enum.Enum):
-    """User role enumeration"""
+    """Enumeración de roles de usuario"""
     ADMIN = "admin"
     CUSTOMER = "customer"
 
 
 class User(BaseModel):
     """
-    User model for both customers and administrators.
+    Modelo de usuario para clientes y administradores.
 
-    Attributes:
-        email: Unique email address for authentication
-        phone: Phone number for contact
-        first_name: User's first name
-        last_name: User's last name
-        password_hash: Hashed password for security
-        role: User role (admin/customer)
+    Atributos:
+        email: Dirección de correo única para autenticación
+        phone: Número de teléfono de contacto
+        first_name: Nombre del usuario
+        last_name: Apellido del usuario
+        password_hash: Contraseña hasheada para seguridad
+        role: Rol del usuario (admin/customer)
     """
     __tablename__ = "users"
 
@@ -40,17 +40,17 @@ class User(BaseModel):
         Enum(UserRole), default=UserRole.CUSTOMER, nullable=False
     )
 
-    # Relationships - usa string type annotation
+    # Relaciones - usa anotación de tipo string
     purchases: Mapped[List["Purchase"]] = relationship(back_populates="user")
 
     @property
     def full_name(self) -> str:
-        """Get user's full name"""
+        """Obtener nombre completo del usuario"""
         return f"{self.first_name} {self.last_name}"
 
     @property
     def is_admin(self) -> bool:
-        """Check if user is admin"""
+        """Verificar si el usuario es administrador"""
         return self.role == UserRole.ADMIN
 
     def __repr__(self) -> str:

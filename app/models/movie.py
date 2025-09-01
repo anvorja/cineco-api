@@ -24,7 +24,6 @@ class MovieStatus(str, enum.Enum):
 class Movie(BaseModel):
     __tablename__ = "movies"
 
-    # --------- Campos básicos ---------
     title: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
     description: Mapped[str] = mapped_column(String(1000), nullable=False)
     genre: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
@@ -32,7 +31,6 @@ class Movie(BaseModel):
     rating: Mapped[str] = mapped_column(String(10), nullable=False)  # G, PG, PG-13, R, NC-17
     price: Mapped[float] = mapped_column(Float, nullable=False)
 
-    # --------- NUEVOS CAMPOS ---------
     director: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
     country: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
 

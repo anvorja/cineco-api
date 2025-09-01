@@ -14,14 +14,14 @@ def create_access_token(
         subject: Union[str, Any], expires_delta: Optional[timedelta] = None
 ) -> str:
     """
-    Create a JWT access token.
+    Crear un token de acceso JWT.
 
     Args:
-        subject: Token subject (usually user ID or email)
-        expires_delta: Token expiration time
+        subject: Sujeto del token (generalmente ID o email del usuario)
+        expires_delta: Tiempo de expiración del token
 
     Returns:
-        JWT token string
+        Cadena del token JWT
     """
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
@@ -39,13 +39,13 @@ def create_access_token(
 
 def verify_token(token: str) -> Optional[str]:
     """
-    Verify JWT token and extract subject.
+    Verificar un token JWT y extraer el sujeto.
 
     Args:
-        token: JWT token string
+        token: Cadena del token JWT
 
     Returns:
-        Token subject if valid, None otherwise
+        Sujeto del token si es válido, None en caso contrario
     """
     try:
         payload = jwt.decode(
@@ -59,26 +59,26 @@ def verify_token(token: str) -> Optional[str]:
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
-    Verify a password against its hash.
+    Verificar una contraseña contra su hash.
 
     Args:
-        plain_password: Plain text password
-        hashed_password: Hashed password from database
+        plain_password: Contraseña en texto plano
+        hashed_password: Contraseña encriptada desde la base de datos
 
     Returns:
-        True if password is correct, False otherwise
+        True si la contraseña es correcta, False en caso contrario
     """
     return pwd_context.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password: str) -> str:
     """
-    Hash a password.
+    Generar el hash de una contraseña.
 
     Args:
-        password: Plain text password
+        password: Contraseña en texto plano
 
     Returns:
-        Hashed password string
+        Contraseña encriptada (hash)
     """
     return pwd_context.hash(password)

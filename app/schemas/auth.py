@@ -2,12 +2,12 @@
 from pydantic import BaseModel, Field, EmailStr
 
 class UserRegister(BaseModel):
-    """Schema for user registration"""
-    email: EmailStr = Field(..., description="User email address")
-    phone: str = Field(..., min_length=10, max_length=20, description="Phone number")
-    first_name: str = Field(..., min_length=1, max_length=100, description="First name")
-    last_name: str = Field(..., min_length=1, max_length=100, description="Last name")
-    password: str = Field(..., min_length=6, description="Password (min 6 characters)")
+    """Esquema para registro de usuario"""
+    email: EmailStr = Field(..., description="Correo electrónico del usuario")
+    phone: str = Field(..., min_length=10, max_length=20, description="Número de teléfono")
+    first_name: str = Field(..., min_length=1, max_length=100, description="Nombre")
+    last_name: str = Field(..., min_length=1, max_length=100, description="Apellido")
+    password: str = Field(..., min_length=6, description="Contraseña (mínimo 6 caracteres)")
 
     model_config = {
         "json_schema_extra": {
@@ -23,9 +23,9 @@ class UserRegister(BaseModel):
 
 
 class UserLogin(BaseModel):
-    """Schema for user login"""
-    email: EmailStr = Field(..., description="User email address")
-    password: str = Field(..., description="User password")
+    """Esquema para inicio de sesión"""
+    email: EmailStr = Field(..., description="Correo electrónico del usuario")
+    password: str = Field(..., description="Contraseña del usuario")
 
     model_config = {
         "json_schema_extra": {
@@ -38,9 +38,9 @@ class UserLogin(BaseModel):
 
 
 class Token(BaseModel):
-    """Schema for JWT token response"""
-    access_token: str = Field(..., description="JWT access token")
-    token_type: str = Field(default="bearer", description="Token type")
+    """Esquema para respuesta con token JWT"""
+    access_token: str = Field(..., description="Token de acceso JWT")
+    token_type: str = Field(default="bearer", description="Tipo de token")
 
     model_config = {
         "json_schema_extra": {
@@ -53,7 +53,7 @@ class Token(BaseModel):
 
 
 class UserResponse(BaseModel):
-    """Schema for user data response"""
+    """Esquema para respuesta con datos de usuario"""
     id: int
     email: str
     phone: str
@@ -65,7 +65,7 @@ class UserResponse(BaseModel):
 
     @classmethod
     def from_orm(cls, user):
-        """Create response from User model"""
+        """Crear respuesta a partir del modelo User"""
         return cls(
             id=user.id,
             email=user.email,

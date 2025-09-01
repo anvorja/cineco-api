@@ -5,12 +5,12 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
 class Base(DeclarativeBase):
-    """Base class for all SQLAlchemy models."""
+    """Clase base para todos los modelos de SQLAlchemy."""
     pass
 
 
 class BaseModel(Base):
-    """Base model with common fields for all entities."""
+    """Modelo base con campos comunes para todas las entidades."""
     __abstract__ = True
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)

@@ -16,7 +16,7 @@ async def get_week_calendar(
         db: Session = Depends(get_db)
 ):
     """
-    Obtener calendario semanal como en las imágenes de referencia.
+    Obtener calendario semanal.
 
     Retorna la programación de 7 días con el formato:
     - Fechas en formato SEP 3, 4, 5, 6, 7
@@ -25,7 +25,6 @@ async def get_week_calendar(
     """
 
     if not start_date:
-        # Empezar desde hoy, pero ajustar al lunes si es necesario
         today = date.today()
         days_since_monday = today.weekday()
         start_date = today - timedelta(days=days_since_monday)
@@ -125,7 +124,7 @@ async def get_theater_calendar(
     """
     Obtener calendario específico de un teatro (ej: Chipichape).
 
-    Replica el formato de las imágenes donde se expande un teatro específico
+    Se expande un teatro específico
     mostrando todas sus funciones organizadas por película y formato.
     """
 

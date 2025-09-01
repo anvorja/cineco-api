@@ -21,15 +21,13 @@ class ShowtimeFormat(str, Enum):
 
 
 class MovieBase(BaseModel):
-    """Schema base para película con nuevos campos"""
+    """Esquema base para película"""
     title: str = Field(..., min_length=1, max_length=200, description="Título de la película")
     description: str = Field(..., min_length=10, max_length=1000, description="Descripción de la película")
     genre: str = Field(..., min_length=1, max_length=50, description="Género de la película")
     duration: int = Field(..., gt=0, le=600, description="Duración en minutos")
     rating: str = Field(..., pattern="^(G|PG|PG-13|R|NC-17)$", description="Clasificación")
     price: float = Field(..., gt=0, le=100000, description="Precio del ticket en pesos colombianos")
-
-    # NUEVOS CAMPOS
     director: str = Field(..., min_length=1, max_length=200, description="Director de la película")
     country: str = Field(..., min_length=1, max_length=100, description="País de origen")
     status: MovieStatus = Field(default=MovieStatus.IN_THEATERS, description="Estado en cartelera")
@@ -44,7 +42,7 @@ class MovieBase(BaseModel):
 
 
 class MovieCreate(MovieBase):
-    """Schema para crear película"""
+    """Esquema para creación de película"""
     max_capacity: int = Field(default=100, ge=1, le=500, description="Capacidad máxima")
     available_tickets: int = Field(default=100, ge=0, le=500, description="Tickets disponibles")
 
@@ -78,15 +76,13 @@ class MovieCreate(MovieBase):
 
 
 class MovieUpdate(BaseModel):
-    """Schema para actualizar película"""
+    """Esquema para actualización de película"""
     title: Optional[str] = Field(None, min_length=1, max_length=200)
     description: Optional[str] = Field(None, min_length=10, max_length=1000)
     genre: Optional[str] = Field(None, min_length=1, max_length=50)
     duration: Optional[int] = Field(None, gt=0, le=600)
     rating: Optional[str] = Field(None, pattern="^(G|PG|PG-13|R|NC-17)$")
     price: Optional[float] = Field(None, gt=0, le=100000)
-
-    # Nuevos campos opcionales
     director: Optional[str] = Field(None, min_length=1, max_length=200)
     country: Optional[str] = Field(None, min_length=1, max_length=100)
     status: Optional[MovieStatus] = None
@@ -103,7 +99,6 @@ class MovieUpdate(BaseModel):
     detail_2_url: Optional[HttpUrl] = None
 
 
-# Schemas para teatros
 class TheaterBase(BaseModel):
     """Schema base para teatro"""
     name: str = Field(..., min_length=1, max_length=100)
@@ -112,12 +107,12 @@ class TheaterBase(BaseModel):
 
 
 class TheaterCreate(TheaterBase):
-    """Schema para crear teatro"""
+    """Esquema para creación de teatro"""
     pass
 
 
 class TheaterResponse(TheaterBase):
-    """Schema para respuesta de teatro"""
+    """Esquema para respuesta de teatro"""
     id: int
     is_active: bool
     created_at: datetime
@@ -134,9 +129,8 @@ class TheaterResponse(TheaterBase):
         )
 
 
-# Schemas para horarios
 class ShowtimeResponse(BaseModel):
-    """Schema para horarios de película"""
+    """Esquema para horarios de proyección"""
     id: int
     show_date: date
     show_time: str
@@ -159,7 +153,7 @@ class ShowtimeResponse(BaseModel):
 
 
 class MovieResponse(BaseModel):
-    """Schema para respuesta completa de película"""
+    """Esquema para respuesta detallada de película"""
     id: int
     title: str
     description: str
@@ -179,20 +173,17 @@ class MovieResponse(BaseModel):
     is_active: bool
     created_at: datetime
 
-    # Imágenes
     poster_url: str
     backdrop_url: str
     detail_1_url: str
     detail_2_url: str
 
-    # Computed fields existentes
     sold_tickets: int
     is_available: bool
     occupancy_rate: float
     detail_images: List[str]
     all_image_urls: List[str]
 
-    # Nuevos campos computados
     theaters: List[str]
     is_in_theaters: bool
     is_coming_soon: bool
@@ -233,7 +224,7 @@ class MovieResponse(BaseModel):
 
 
 class MovieWithShowtimesResponse(MovieResponse):
-    """Schema para película con horarios"""
+    """Esquema para película con horarios asociados"""
     showtimes: List[ShowtimeResponse]
 
     @classmethod
@@ -244,7 +235,7 @@ class MovieWithShowtimesResponse(MovieResponse):
 
 
 class MovieListResponse(BaseModel):
-    """Schema para lista de películas (vista compacta)"""
+    """Esquema para lista compacta de películas"""
     id: int
     title: str
     genre: str
@@ -288,7 +279,7 @@ class MovieListResponse(BaseModel):
 
 # Schema para crear horarios masivamente
 class CreateShowtimesRequest(BaseModel):
-    """Schema para crear horarios para una película"""
+    """Esquema para crear horarios masivamente"""
     movie_id: int
     start_date: date
     days_count: int = Field(default=7, ge=1, le=30, description="Cantidad de días a programar")
