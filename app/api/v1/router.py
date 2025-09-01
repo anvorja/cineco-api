@@ -1,6 +1,6 @@
 # app/api/v1/router.py
 from fastapi import APIRouter
-from .endpoints import auth, movies, admin, purchases, calendar, theaters
+from .endpoints import auth, movies, admin, purchases, calendar, theaters, users
 
 # Create main API router
 api_router = APIRouter(
@@ -17,6 +17,11 @@ api_router.include_router(
     tags=["🔐 Authentication"],
     responses={401: {"description": "Authentication failed"}}
 )
+
+api_router.include_router(
+    users.router,
+    prefix="/users",
+    tags=["👤 User"])
 
 api_router.include_router(
     movies.router,
