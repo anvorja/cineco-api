@@ -1,11 +1,12 @@
-# app/api/v1/endpoints/auth.py# app/api/v1/endpoints/auth.py
-from fastapi import APIRouter, Depends, status
+# app/api/v1/endpoints/auth.py
+from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.services.auth_service import AuthService
+from app.services.token_service import TokenService
 from app.schemas.auth import UserRegister, UserLogin, Token, UserResponse, LogoutResponse
-from app.api.dependencies import get_current_user
+from app.api.dependencies import get_current_user, get_current_token
 from app.models import User
 
 router = APIRouter()
@@ -53,29 +54,38 @@ async def login(
 
 @router.post("/logout", response_model=LogoutResponse)
 async def logout(
-        current_user: User = Depends(get_current_user)
+        current_token: str = Depends(get_current_token),
+        current_user: User = Depends(get_current_user),
+        db: Session = Depends(get_db)
 ):
     """
-    Cerrar sesión del usuario actual.
+    Cerrar sesión invalidando el token inmediatamente mediante blacklist.
 
-    En implementaciones JWT stateless, el logout se maneja en el cliente
-    eliminando el token. Este endpoint confirma la acción y puede usarse
-    para logging/auditoría.
+    ✅ INVALIDACIÓN INMEDIATA: El token se agrega a una blacklist
+    ✅ SEGURIDAD MEJORADA: Token no se puede reutilizar
+    ✅ AUDITORÍA: Se registra cuándo y quién hizo logout
 
     Requiere un token JWT válido en el encabezado Authorization.
+    Una vez ejecutado, el token quedará inmediatamente invalidado.
     """
-    # En JWT stateless, no hay mucho que hacer en el servidor
-    # El token seguirá siendo válido hasta que expire
+    # Agregar token a blacklist para invalidarlo inmediatamente
+    success = TokenService.blacklist_token(
+        db=db,
+        token=current_token,
+        user=current_user,
+        reason="logout"
+    )
 
-    # TODO: Para una implementación más robusta:
-    # 1. Mantener una blacklist de tokens
-    # 2. Acortar el tiempo de expiración
-    # 3. Usar refresh tokens
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error processing logout. Please try again."
+        )
 
     return LogoutResponse(
-        message="Sesión cerrada exitosamente",
+        message="Sesión cerrada exitosamente. Token invalidado inmediatamente.",
         user_id=current_user.id,
-        logout_time=None  # Se llenará automáticamente con la fecha actual
+        logout_time=None  # Se llenará automáticamente
     )
 
 
@@ -96,7 +106,7 @@ async def verify_token(
         current_user: User = Depends(get_current_user)
 ):
     """
-    Verificar si el token JWT es válido.
+    Verificar si el token JWT es válido y no está en blacklist.
 
     Retorna el ID, correo y rol del usuario si el token es válido.
     """
@@ -105,4 +115,29 @@ async def verify_token(
         "user_id": current_user.id,
         "email": current_user.email,
         "role": current_user.role.value
+    }
+
+
+# Logout de todas las sesiones (TODO: en frontend)
+@router.post("/logout-all")
+async def logout_all_sessions(
+        current_user: User = Depends(get_current_user),
+        db: Session = Depends(get_db)
+):
+    """
+    Cerrar TODAS las sesiones activas del usuario.
+
+    Útil para casos de seguridad donde el usuario quiere
+    invalidar todos sus tokens activos.
+    """
+    count = TokenService.blacklist_all_user_tokens(
+        db=db,
+        user_id=current_user.id,
+        reason="logout_all_sessions"
+    )
+
+    return {
+        "message": "Todas las sesiones han sido cerradas exitosamente",
+        "user_id": current_user.id,
+        "sessions_closed": count
     }

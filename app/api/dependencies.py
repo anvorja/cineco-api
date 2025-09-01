@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import verify_token
 from app.models import User
+from app.services.token_service import TokenService
 
-# Security scheme
 security = HTTPBearer()
 
 
@@ -26,7 +26,7 @@ async def get_current_user(
         Objeto del usuario autenticado
 
     Raises:
-        HTTPException: Si el token no es válido o el usuario no existe
+        HTTPException: Si el token no es válido, está blacklisted o el usuario no existe
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -34,8 +34,18 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-    # Verificar el token
-    user_email = verify_token(credentials.credentials)
+    token = credentials.credentials
+
+    # Comprobar si el token está en blacklist
+    if TokenService.is_token_blacklisted(db, token):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has been invalidated. Please login again.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Verificar el token normalmente
+    user_email = verify_token(token)
     if user_email is None:
         raise credentials_exception
 
@@ -91,3 +101,16 @@ async def get_current_active_user(
             detail="Inactive user"
         )
     return current_user
+
+
+# Extraer token para operaciones que lo necesiten
+async def get_current_token(
+        credentials: HTTPAuthorizationCredentials = Depends(security)
+) -> str:
+    """
+    Extraer el token JWT actual para operaciones como logout.
+
+    Returns:
+        El token JWT actual
+    """
+    return credentials.credentials

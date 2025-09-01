@@ -17,6 +17,10 @@ from app.schemas.auth import UserResponse
 from app.schemas.purchase import PurchaseResponse
 from app.models import User
 from app.models.theater import Theater
+from app.schemas.blacklist import (
+    BlacklistStats, BlacklistCleanupResponse, ForceLogoutResponse,
+    BlacklistListResponse, TokenBlacklistResponse
+)
 
 router = APIRouter()
 
@@ -299,3 +303,176 @@ async def get_sales_report(
 ):
     """Obtener reporte consolidado de ventas"""
     return PurchaseService.get_sales_report(db=db)
+
+
+# AGREGAR AL FINAL de app/api/v1/endpoints/admin.py
+
+# ======================
+# 🔒 Token Blacklist Management
+# ======================
+@router.get("/blacklist/stats", response_model=BlacklistStats)
+async def get_blacklist_statistics(
+        db: Session = Depends(get_db),
+        current_admin: User = Depends(get_current_admin)
+):
+    """
+    Obtener estadísticas completas de la blacklist de tokens.
+
+    Incluye:
+    - Total de tokens invalidados
+    - Tokens invalidados en las últimas 24 horas
+    - Distribución por razones de invalidación
+    - Timestamp de generación del reporte
+    """
+    from app.services.token_service import TokenService
+
+    stats = TokenService.get_blacklist_stats(db=db)
+    return BlacklistStats(**stats)
+
+
+@router.get("/blacklist/list", response_model=BlacklistListResponse)
+async def list_blacklisted_tokens(
+        page: int = Query(default=1, ge=1, description="Número de página"),
+        page_size: int = Query(default=20, ge=1, le=100, description="Tamaño de página"),
+        user_id: Optional[int] = Query(None, description="Filtrar por ID de usuario"),
+        reason: Optional[str] = Query(None, description="Filtrar por razón"),
+        db: Session = Depends(get_db),
+        current_admin: User = Depends(get_current_admin)
+):
+    """
+    Listar tokens en blacklist con paginación y filtros.
+
+    Permite filtrar por usuario específico o razón de invalidación.
+    """
+    from app.models.token_blacklist import TokenBlacklist
+    from sqlalchemy import desc
+
+    # Query base
+    query = db.query(TokenBlacklist)
+
+    # Aplicar filtros
+    if user_id:
+        query = query.filter(TokenBlacklist.user_id == user_id)
+    if reason:
+        query = query.filter(TokenBlacklist.reason == reason)
+
+    # Contar total
+    total_count = query.count()
+
+    # Calcular paginación
+    offset = (page - 1) * page_size
+    total_pages = (total_count + page_size - 1) // page_size
+
+    # Obtener registros paginados
+    tokens = query.order_by(desc(TokenBlacklist.blacklisted_at)).offset(offset).limit(page_size).all()
+
+    return BlacklistListResponse(
+        tokens=[TokenBlacklistResponse.from_orm(token) for token in tokens],
+        total_count=total_count,
+        page=page,
+        page_size=page_size,
+        total_pages=total_pages
+    )
+
+
+@router.post("/blacklist/cleanup", response_model=BlacklistCleanupResponse)
+async def cleanup_blacklist(
+        days_old: int = Query(default=30, ge=1, le=365, description="Limpiar tokens más viejos que X días"),
+        db: Session = Depends(get_db),
+        current_admin: User = Depends(get_current_admin)
+):
+    """
+    Limpiar tokens expirados de la blacklist.
+
+    Elimina tokens blacklisted más antiguos que el umbral especificado.
+    Útil para mantener el tamaño de la blacklist bajo control.
+    """
+    from app.services.token_service import TokenService
+    from datetime import datetime
+
+    deleted_count = TokenService.cleanup_expired_tokens(db=db, days_old=days_old)
+
+    return BlacklistCleanupResponse(
+        message="Limpieza completada exitosamente",
+        tokens_cleaned=deleted_count,
+        days_threshold=days_old,
+        cleanup_date=datetime.now().isoformat()
+    )
+
+
+@router.post("/users/{user_id}/logout-force", response_model=ForceLogoutResponse)
+async def force_logout_user(
+        user_id: int,
+        reason: str = Query(default="admin_action", description="Razón del logout forzado"),
+        db: Session = Depends(get_db),
+        current_admin: User = Depends(get_current_admin)
+):
+    """
+    Forzar logout de todas las sesiones de un usuario específico.
+
+    Invalida inmediatamente todos los tokens activos del usuario.
+    Útil para casos de emergencia de seguridad o suspensión de cuenta.
+    """
+    from app.services.token_service import TokenService
+
+    # Verificar que el usuario existe
+    target_user = db.query(User).filter(User.id == user_id).first()
+    if not target_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuario no encontrado"
+        )
+
+    # Prevenir que admin se haga logout a sí mismo
+    if user_id == current_admin.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No puedes forzar tu propio logout"
+        )
+
+    count = TokenService.blacklist_all_user_tokens(
+        db=db,
+        user_id=user_id,
+        reason=f"admin_force_logout: {reason}"
+    )
+
+    return ForceLogoutResponse(
+        message=f"Logout forzado aplicado al usuario {target_user.full_name}",
+        user_id=user_id,
+        sessions_closed=count,
+        reason=reason,
+        admin_user=current_admin.full_name
+    )
+
+
+@router.delete("/blacklist/{token_id}")
+async def remove_token_from_blacklist(
+        token_id: int,
+        db: Session = Depends(get_db),
+        current_admin: User = Depends(get_current_admin)
+):
+    """
+    Remover un token específico de la blacklist.
+
+    ADVERTENCIA: Esto efectivamente "rehabilita" un token previamente invalidado.
+    Solo usar en casos excepcionales o de debugging.
+    """
+    from app.models.token_blacklist import TokenBlacklist
+
+    token_record = db.query(TokenBlacklist).filter(TokenBlacklist.id == token_id).first()
+    if not token_record:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Token no encontrado en blacklist"
+        )
+
+    user_email = token_record.user_email
+    db.delete(token_record)
+    db.commit()
+
+    return {
+        "message": f"Token removido de blacklist para usuario {user_email}",
+        "token_id": token_id,
+        "admin_user": current_admin.full_name,
+        "warning": "El token podría volver a ser válido si no ha expirado naturalmente"
+    }

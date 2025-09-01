@@ -4,6 +4,7 @@ from .user import User, UserRole
 from .movie import Movie, MovieStatus
 from .purchase import Purchase, Ticket, PurchaseStatus, TicketStatus
 from .theater import Theater, TheaterMovie, MovieShowtime, ShowtimeFormat
+from .token_blacklist import TokenBlacklist  # ← AGREGAR ESTA LÍNEA
 
 __all__ = [
     # Base
@@ -28,5 +29,8 @@ __all__ = [
     "Theater",
     "TheaterMovie",
     "MovieShowtime",
-    "ShowtimeFormat"
+    "ShowtimeFormat",
+
+    # Token Blacklist
+    "TokenBlacklist"  # ← AGREGAR ESTA LÍNEA
 ]
