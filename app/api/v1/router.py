@@ -1,6 +1,6 @@
 # app/api/v1/router.py
 from fastapi import APIRouter
-from .endpoints import auth, movies, admin, purchases
+from .endpoints import auth, movies, admin, purchases, calendar, theaters
 
 # Create main API router
 api_router = APIRouter(
@@ -26,6 +26,14 @@ api_router.include_router(
     tags=["🎬 Movies"]
 )
 
+# Include theaters router (public endpoints)
+api_router.include_router(
+    theaters.router,
+    prefix="/theaters",
+    tags=["🏢 Theaters"],
+    responses={404: {"description": "Theater not found"}}
+)
+
 # Include purchases router (protected endpoints)
 api_router.include_router(
     purchases.router,
@@ -47,3 +55,12 @@ api_router.include_router(
         403: {"description": "Admin privileges required"}
     }
 )
+
+
+api_router.include_router(
+    calendar.router,
+    prefix="/calendar",
+    tags=["📅 Programación y Calendarios"],
+    responses={404: {"description": "Información no encontrada"}}
+)
+

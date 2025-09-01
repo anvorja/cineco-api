@@ -1,16 +1,22 @@
-# app/api/v1/endpoints/admin.py
+# app/api/v1/endpoints/admin.py - CORREGIDO CON IMPORTS
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 
 from app.core.database import get_db
 from app.api.dependencies import get_current_admin
 from app.services.movie_service import MovieService
 from app.services.purchase_service import PurchaseService
-from app.schemas.movie import MovieCreate, MovieUpdate, MovieResponse
+from app.schemas.movie import (
+    MovieCreate, MovieUpdate, MovieResponse,
+    CreateShowtimesRequest, TheaterResponse, TheaterCreate,
+    ShowtimeResponse
+)
 from app.schemas.auth import UserResponse
 from app.schemas.purchase import PurchaseResponse
-from app.models import User, Movie
+from app.models import User
+from app.models.theater import Theater
 
 router = APIRouter()
 
@@ -24,12 +30,7 @@ async def create_movie(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """
-    Create a new movie (admin only).
-
-    Requires admin authentication.
-    Creates a new movie with the provided information.
-    """
+    """Crear nueva película (admin only)"""
     movie = MovieService.create_movie(db=db, movie_data=movie_data)
     return MovieResponse.from_orm(movie)
 
@@ -38,18 +39,13 @@ async def create_movie(
 async def get_all_movies_admin(
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=20, ge=1, le=100),
-    include_inactive: bool = Query(default=False, description="Include inactive movies"),
-    search: Optional[str] = Query(None, description="Search in title and description"),
-    genre: Optional[str] = Query(None, description="Filter by genre"),
+    include_inactive: bool = Query(default=False, description="Incluir películas inactivas"),
+    search: Optional[str] = Query(None, description="Buscar en título y descripción"),
+    genre: Optional[str] = Query(None, description="Filtrar por género"),
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """
-    Get all movies including inactive ones (admin only).
-
-    Allows administrators to see all movies in the system,
-    including inactive/disabled movies.
-    """
+    """Obtener todas las películas incluyendo inactivas (admin only)"""
     movies = MovieService.get_movies(
         db=db,
         skip=skip,
@@ -57,7 +53,7 @@ async def get_all_movies_admin(
         include_inactive=include_inactive,
         search=search,
         genre=genre,
-        available_only=False  # Admin can see all movies
+        available_only=False  # Admin puede ver todas
     )
     return [MovieResponse.from_orm(movie) for movie in movies]
 
@@ -68,14 +64,10 @@ async def get_movie_admin(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """
-    Get movie details including inactive movies (admin only).
-
-    Administrators can view any movie, even inactive ones.
-    """
+    """Obtener detalles de película incluyendo inactivas (admin only)"""
     movie = MovieService.get_movie_by_id(db=db, movie_id=movie_id, include_inactive=True)
     if not movie:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Película no encontrada")
     return MovieResponse.from_orm(movie)
 
 
@@ -86,15 +78,10 @@ async def update_movie(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """
-    Update movie information (admin only).
-
-    Allows administrators to modify movie details.
-    Only provided fields will be updated.
-    """
+    """Actualizar información de película (admin only)"""
     movie = MovieService.update_movie(db=db, movie_id=movie_id, movie_data=movie_data)
     if not movie:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Película no encontrada")
     return MovieResponse.from_orm(movie)
 
 
@@ -104,16 +91,78 @@ async def toggle_movie_status(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """
-    Toggle movie active/inactive status (admin only).
-
-    Enables or disables a movie without deleting it.
-    Inactive movies won't appear in public endpoints.
-    """
+    """Alternar estado activo/inactivo de película (admin only)"""
     movie = MovieService.toggle_movie_status(db=db, movie_id=movie_id)
     if not movie:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Película no encontrada")
     return MovieResponse.from_orm(movie)
+
+# ======================
+# 🏢 Theater Management
+# ======================
+@router.post("/theaters", response_model=TheaterResponse, status_code=status.HTTP_201_CREATED)
+async def create_theater(
+    theater_data: TheaterCreate,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(get_current_admin)
+):
+    """Crear nuevo teatro (admin only)"""
+    # Verificar que no existe
+    existing = db.query(Theater).filter(Theater.name == theater_data.name).first()
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Teatro '{theater_data.name}' ya existe"
+        )
+
+    theater = Theater(
+        name=theater_data.name,
+        location=theater_data.location,
+        description=theater_data.description
+    )
+
+    db.add(theater)
+    db.commit()
+    db.refresh(theater)
+
+    return TheaterResponse.from_orm(theater)
+
+
+@router.get("/theaters", response_model=List[TheaterResponse])
+async def get_all_theaters_admin(
+    skip: int = Query(default=0, ge=0),
+    limit: int = Query(default=20, ge=1, le=100),
+    include_inactive: bool = Query(default=False),
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(get_current_admin)
+):
+    """Obtener todos los teatros (admin only)"""
+    query = db.query(Theater)
+
+    if not include_inactive:
+        query = query.filter(Theater.is_active == True)
+
+    theaters = query.offset(skip).limit(limit).all()
+    return [TheaterResponse.from_orm(theater) for theater in theaters]
+
+
+@router.post("/movies/{movie_id}/showtimes", response_model=List[ShowtimeResponse])
+async def create_movie_showtimes(
+    movie_id: int,
+    showtimes_request: CreateShowtimesRequest,
+    db: Session = Depends(get_db),
+    current_admin: User = Depends(get_current_admin)
+):
+    """Crear horarios para una película específica (admin only)"""
+    created_showtimes = MovieService.create_showtimes_for_movie(
+        db=db,
+        movie_id=movie_id,
+        start_date=showtimes_request.start_date,
+        days_count=showtimes_request.days_count,
+        theater_ids=showtimes_request.theater_ids
+    )
+
+    return [ShowtimeResponse.from_orm(showtime) for showtime in created_showtimes]
 
 
 # ======================
@@ -123,16 +172,12 @@ async def toggle_movie_status(
 async def get_all_users(
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=20, ge=1, le=100),
-    include_inactive: bool = Query(default=False, description="Include inactive users"),
-    search: Optional[str] = Query(None, description="Search by email or name"),
+    include_inactive: bool = Query(default=False, description="Incluir usuarios inactivos"),
+    search: Optional[str] = Query(None, description="Buscar por email o nombre"),
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """
-    Get all users in the system (admin only).
-
-    Allows administrators to view and manage user accounts.
-    """
+    """Obtener todos los usuarios del sistema (admin only)"""
     query = db.query(User)
 
     if not include_inactive:
@@ -141,9 +186,11 @@ async def get_all_users(
     if search:
         search_term = f"%{search.strip()}%"
         query = query.filter(
-            User.email.ilike(search_term) |
-            User.first_name.ilike(search_term) |
-            User.last_name.ilike(search_term)
+            or_(
+                User.email.ilike(search_term),
+                User.first_name.ilike(search_term),
+                User.last_name.ilike(search_term)
+            )
         )
 
     users = query.offset(skip).limit(limit).all()
@@ -156,14 +203,10 @@ async def get_user_admin(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """
-    Get user details (admin only).
-
-    Allows administrators to view detailed user information.
-    """
+    """Obtener detalles de usuario (admin only)"""
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
     return UserResponse.from_orm(user)
 
 
@@ -173,21 +216,16 @@ async def toggle_user_status(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """
-    Toggle user active/inactive status (admin only).
-
-    Enables or disables user accounts.
-    Inactive users cannot login or make purchases.
-    """
+    """Alternar estado activo/inactivo de usuario (admin only)"""
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
 
-    # Prevent admin from disabling themselves
+    # Prevenir que admin se deshabilite a sí mismo
     if user.id == current_admin.id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cannot disable your own account"
+            detail="No puedes deshabilitar tu propia cuenta"
         )
 
     user.is_active = not user.is_active
@@ -203,17 +241,13 @@ async def toggle_user_status(
 async def get_all_purchases(
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=20, ge=1, le=100),
-    movie_id: Optional[int] = Query(None, description="Filter by movie ID"),
-    user_id: Optional[int] = Query(None, description="Filter by user ID"),
-    status: Optional[str] = Query(None, description="Filter by status"),
+    movie_id: Optional[int] = Query(None, description="Filtrar por ID de película"),
+    user_id: Optional[int] = Query(None, description="Filtrar por ID de usuario"),
+    status: Optional[str] = Query(None, description="Filtrar por estado"),
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """
-    Get all purchases in the system (admin only).
-
-    Supports filters by movie, user, or status.
-    """
+    """Obtener todas las compras del sistema (admin only)"""
     purchases = PurchaseService.get_all_purchases(
         db=db,
         skip=skip,
@@ -233,9 +267,7 @@ async def get_purchases_by_movie(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """
-    Get all purchases for a specific movie (admin only).
-    """
+    """Obtener todas las compras para una película específica (admin only)"""
     purchases = PurchaseService.get_all_purchases(
         db=db,
         skip=skip,
@@ -253,9 +285,7 @@ async def get_purchases_by_user(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """
-    Get all purchases for a specific user (admin only).
-    """
+    """Obtener todas las compras para un usuario específico (admin only)"""
     purchases = PurchaseService.get_all_purchases(
         db=db,
         skip=skip,
@@ -265,15 +295,10 @@ async def get_purchases_by_user(
     return [PurchaseResponse.from_orm(purchase) for purchase in purchases]
 
 
-# ======================
-# 📊 Reports
-# ======================
 @router.get("/reports/sales")
 async def get_sales_report(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin)
 ):
-    """
-    Get consolidated sales report (admin only).
-    """
+    """Obtener reporte consolidado de ventas (admin only)"""
     return PurchaseService.get_sales_report(db=db)

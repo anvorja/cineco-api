@@ -1,8 +1,8 @@
-"""Initial schema with individual image fields
+"""Initial schema with theaters
 
-Revision ID: ef8811f5345d
+Revision ID: 901f7be5a640
 Revises: 
-Create Date: 2025-08-31 02:28:09.480094
+Create Date: 2025-08-31 20:10:47.870269
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'ef8811f5345d'
+revision: str = '901f7be5a640'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -28,21 +28,43 @@ def upgrade() -> None:
     sa.Column('duration', sa.Integer(), nullable=False),
     sa.Column('rating', sa.String(length=10), nullable=False),
     sa.Column('price', sa.Float(), nullable=False),
+    sa.Column('director', sa.String(length=200), nullable=False),
+    sa.Column('country', sa.String(length=100), nullable=False),
+    sa.Column('status', sa.Enum('IN_THEATERS', 'COMING_SOON', 'ENDED', name='moviestatus'), nullable=False),
+    sa.Column('is_presale', sa.Boolean(), nullable=False),
+    sa.Column('release_date', sa.Date(), nullable=False),
     sa.Column('max_capacity', sa.Integer(), nullable=False),
     sa.Column('available_tickets', sa.Integer(), nullable=False),
     sa.Column('poster_url', sa.String(length=1000), nullable=False),
     sa.Column('backdrop_url', sa.String(length=1000), nullable=False),
     sa.Column('detail_1_url', sa.String(length=1000), nullable=False),
     sa.Column('detail_2_url', sa.String(length=1000), nullable=False),
-    sa.Column('is_active', sa.Boolean(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_index(op.f('ix_movies_country'), 'movies', ['country'], unique=False)
+    op.create_index(op.f('ix_movies_director'), 'movies', ['director'], unique=False)
     op.create_index(op.f('ix_movies_genre'), 'movies', ['genre'], unique=False)
     op.create_index(op.f('ix_movies_id'), 'movies', ['id'], unique=False)
+    op.create_index(op.f('ix_movies_is_presale'), 'movies', ['is_presale'], unique=False)
+    op.create_index(op.f('ix_movies_release_date'), 'movies', ['release_date'], unique=False)
+    op.create_index(op.f('ix_movies_status'), 'movies', ['status'], unique=False)
     op.create_index(op.f('ix_movies_title'), 'movies', ['title'], unique=False)
+    op.create_table('theaters',
+    sa.Column('name', sa.String(length=100), nullable=False),
+    sa.Column('location', sa.String(length=200), nullable=False),
+    sa.Column('description', sa.String(length=500), nullable=True),
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_theaters_id'), 'theaters', ['id'], unique=False)
+    op.create_index(op.f('ix_theaters_name'), 'theaters', ['name'], unique=True)
     op.create_table('users',
     sa.Column('email', sa.String(length=255), nullable=False),
     sa.Column('phone', sa.String(length=20), nullable=False),
@@ -58,6 +80,27 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
     op.create_index(op.f('ix_users_id'), 'users', ['id'], unique=False)
+    op.create_table('movie_showtimes',
+    sa.Column('movie_id', sa.Integer(), nullable=False),
+    sa.Column('theater_id', sa.Integer(), nullable=False),
+    sa.Column('show_date', sa.Date(), nullable=False),
+    sa.Column('show_time', sa.String(length=10), nullable=False),
+    sa.Column('format', sa.Enum('TWO_D_DUBBED', 'TWO_D_SUBTITLED', 'THREE_D', 'IMAX', name='showtimeformat'), nullable=False),
+    sa.Column('capacity', sa.Integer(), nullable=False),
+    sa.Column('available_tickets', sa.Integer(), nullable=False),
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.ForeignKeyConstraint(['movie_id'], ['movies.id'], ),
+    sa.ForeignKeyConstraint(['theater_id'], ['theaters.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_movie_showtimes_id'), 'movie_showtimes', ['id'], unique=False)
+    op.create_index(op.f('ix_movie_showtimes_movie_id'), 'movie_showtimes', ['movie_id'], unique=False)
+    op.create_index(op.f('ix_movie_showtimes_show_date'), 'movie_showtimes', ['show_date'], unique=False)
+    op.create_index(op.f('ix_movie_showtimes_theater_id'), 'movie_showtimes', ['theater_id'], unique=False)
+    op.create_index('ix_showtime_unique', 'movie_showtimes', ['movie_id', 'theater_id', 'show_date', 'show_time', 'format'], unique=True)
     op.create_table('purchases',
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('movie_id', sa.Integer(), nullable=False),
@@ -77,6 +120,23 @@ def upgrade() -> None:
     op.create_index(op.f('ix_purchases_movie_id'), 'purchases', ['movie_id'], unique=False)
     op.create_index(op.f('ix_purchases_status'), 'purchases', ['status'], unique=False)
     op.create_index(op.f('ix_purchases_user_id'), 'purchases', ['user_id'], unique=False)
+    op.create_table('theater_movies',
+    sa.Column('theater_id', sa.Integer(), nullable=False),
+    sa.Column('movie_id', sa.Integer(), nullable=False),
+    sa.Column('capacity', sa.Integer(), nullable=False),
+    sa.Column('available_tickets', sa.Integer(), nullable=False),
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.ForeignKeyConstraint(['movie_id'], ['movies.id'], ),
+    sa.ForeignKeyConstraint(['theater_id'], ['theaters.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index('ix_theater_movie', 'theater_movies', ['theater_id', 'movie_id'], unique=True)
+    op.create_index(op.f('ix_theater_movies_id'), 'theater_movies', ['id'], unique=False)
+    op.create_index(op.f('ix_theater_movies_movie_id'), 'theater_movies', ['movie_id'], unique=False)
+    op.create_index(op.f('ix_theater_movies_theater_id'), 'theater_movies', ['theater_id'], unique=False)
     op.create_table('tickets',
     sa.Column('purchase_id', sa.Integer(), nullable=False),
     sa.Column('ticket_code', sa.String(length=20), nullable=False),
@@ -103,16 +163,35 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_tickets_purchase_id'), table_name='tickets')
     op.drop_index(op.f('ix_tickets_id'), table_name='tickets')
     op.drop_table('tickets')
+    op.drop_index(op.f('ix_theater_movies_theater_id'), table_name='theater_movies')
+    op.drop_index(op.f('ix_theater_movies_movie_id'), table_name='theater_movies')
+    op.drop_index(op.f('ix_theater_movies_id'), table_name='theater_movies')
+    op.drop_index('ix_theater_movie', table_name='theater_movies')
+    op.drop_table('theater_movies')
     op.drop_index(op.f('ix_purchases_user_id'), table_name='purchases')
     op.drop_index(op.f('ix_purchases_status'), table_name='purchases')
     op.drop_index(op.f('ix_purchases_movie_id'), table_name='purchases')
     op.drop_index(op.f('ix_purchases_id'), table_name='purchases')
     op.drop_table('purchases')
+    op.drop_index('ix_showtime_unique', table_name='movie_showtimes')
+    op.drop_index(op.f('ix_movie_showtimes_theater_id'), table_name='movie_showtimes')
+    op.drop_index(op.f('ix_movie_showtimes_show_date'), table_name='movie_showtimes')
+    op.drop_index(op.f('ix_movie_showtimes_movie_id'), table_name='movie_showtimes')
+    op.drop_index(op.f('ix_movie_showtimes_id'), table_name='movie_showtimes')
+    op.drop_table('movie_showtimes')
     op.drop_index(op.f('ix_users_id'), table_name='users')
     op.drop_index(op.f('ix_users_email'), table_name='users')
     op.drop_table('users')
+    op.drop_index(op.f('ix_theaters_name'), table_name='theaters')
+    op.drop_index(op.f('ix_theaters_id'), table_name='theaters')
+    op.drop_table('theaters')
     op.drop_index(op.f('ix_movies_title'), table_name='movies')
+    op.drop_index(op.f('ix_movies_status'), table_name='movies')
+    op.drop_index(op.f('ix_movies_release_date'), table_name='movies')
+    op.drop_index(op.f('ix_movies_is_presale'), table_name='movies')
     op.drop_index(op.f('ix_movies_id'), table_name='movies')
     op.drop_index(op.f('ix_movies_genre'), table_name='movies')
+    op.drop_index(op.f('ix_movies_director'), table_name='movies')
+    op.drop_index(op.f('ix_movies_country'), table_name='movies')
     op.drop_table('movies')
     # ### end Alembic commands ###

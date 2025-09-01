@@ -1,98 +1,196 @@
-# app/api/v1/endpoints/movies.py
+# app/api/v1/endpoints/movies.py - CORREGIDO
 from typing import List, Optional
+from datetime import date, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.services.movie_service import MovieService
-from app.schemas.movie import MovieResponse, MovieListResponse
+from app.models.movie import MovieStatus, Movie
+from app.models.theater import Theater
+from app.schemas.movie import (
+    MovieListResponse, MovieWithShowtimesResponse,
+    ShowtimeResponse, TheaterResponse
+)
 
 router = APIRouter()
 
 
 @router.get("/", response_model=List[MovieListResponse])
 async def get_movies(
-        skip: int = Query(default=0, ge=0, description="Number of records to skip"),
-        limit: int = Query(default=10, ge=1, le=50, description="Maximum records to return"),
+        skip: int = Query(default=0, ge=0, description="Registros a omitir"),
+        limit: int = Query(default=10, ge=1, le=50, description="Máximo registros a retornar"),
+        # Filtros mejorados
+        status: Optional[str] = Query(default=None, description="Estado: in_theaters, coming_soon, ended"),
+        is_presale: Optional[bool] = Query(default=None, description="Solo películas en preventa"),
+        theater: Optional[str] = Query(default=None, description="Filtrar por teatro"),
         db: Session = Depends(get_db)
 ):
     """
-    Get all available movies (public endpoint).
+    Obtener películas disponibles con filtros mejorados.
 
-    Returns list of active movies with available tickets.
-    Anyone can access this endpoint without authentication.
+    Por defecto muestra solo películas que se pueden ver:
+    - En cartelera (in_theaters)
+    - Próximos estrenos en preventa (coming_soon + is_presale=true)
     """
-    movies = MovieService.get_movies(
-        db=db,
-        skip=skip,
-        limit=limit,
-        include_inactive=False,
-        available_only=True
-    )
+    # Si no especifica status, mostrar películas "disponibles"
+    if status is None:
+        # Obtener películas en cartelera Y próximos estrenos con preventa
+        movies = MovieService.get_movies(
+            db=db,
+            skip=skip,
+            limit=limit,
+            include_inactive=False,
+            theater_name=theater,
+            available_only=True
+        )
 
-    return [MovieListResponse.from_orm(movie) for movie in movies]
+        # Filtrar las que están disponibles para mostrar
+        available_movies = [movie for movie in movies if movie.is_available]
+
+        # Aplicar filtro de preventa si se especifica
+        if is_presale is not None:
+            available_movies = [movie for movie in available_movies if movie.is_presale == is_presale]
+
+    else:
+        # Usar status específico
+        try:
+            movie_status = MovieStatus(status)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Estado inválido")
+
+        movies = MovieService.get_movies(
+            db=db,
+            skip=skip,
+            limit=limit,
+            include_inactive=False,
+            status=movie_status,
+            is_presale=is_presale,
+            theater_name=theater,
+            available_only=True
+        )
+        available_movies = movies
+
+    return [MovieListResponse.from_orm(movie) for movie in available_movies]
 
 
 @router.get("/search", response_model=List[MovieListResponse])
 async def search_movies(
-        q: Optional[str] = Query(None, description="Search in title and description"),
-        genre: Optional[str] = Query(None, description="Filter by genre"),
-        min_price: Optional[float] = Query(None, ge=0, description="Minimum price"),
-        max_price: Optional[float] = Query(None, ge=0, description="Maximum price"),
-        rating: Optional[str] = Query(None, pattern="^(G|PG|PG-13|R|NC-17)$", description="Movie rating"),
-        available_only: bool = Query(True, description="Only movies with available tickets"),
-        skip: int = Query(default=0, ge=0, description="Number of records to skip"),
-        limit: int = Query(default=10, ge=1, le=50, description="Maximum records to return"),
+        q: Optional[str] = Query(None, description="Búsqueda en título, descripción y director"),
+        genre: Optional[str] = Query(None, description="Filtrar por género"),
+        director: Optional[str] = Query(None, description="Filtrar por director"),
+        country: Optional[str] = Query(None, description="Filtrar por país"),
+        min_price: Optional[float] = Query(None, ge=0, description="Precio mínimo"),
+        max_price: Optional[float] = Query(None, ge=0, description="Precio máximo"),
+        rating: Optional[str] = Query(None, pattern="^(G|PG|PG-13|R|NC-17)$", description="Clasificación"),
+        status: Optional[str] = Query(None, description="Estado de la película"),
+        theater: Optional[str] = Query(None, description="Filtrar por teatro"),
+        available_only: bool = Query(True, description="Solo películas con tickets disponibles"),
+        skip: int = Query(default=0, ge=0),
+        limit: int = Query(default=10, ge=1, le=50),
         db: Session = Depends(get_db)
 ):
-    """
-    Search and filter movies (public endpoint).
+    """Búsqueda avanzada de películas con múltiples filtros."""
+    movie_status = None
+    if status:
+        try:
+            movie_status = MovieStatus(status)
+        except ValueError:
+            movie_status = None
 
-    - **q**: Search term for title and description
-    - **genre**: Filter by movie genre
-    - **min_price**: Minimum ticket price
-    - **max_price**: Maximum ticket price
-    - **rating**: Movie rating (G, PG, PG-13, R, NC-17)
-    - **available_only**: Show only movies with available tickets
-
-    Anyone can use this endpoint to find movies with filters.
-    """
     movies = MovieService.get_movies(
         db=db,
         skip=skip,
         limit=limit,
-        include_inactive=False,
         search=q,
         genre=genre,
+        director=director,
+        country=country,
         min_price=min_price,
         max_price=max_price,
         rating=rating,
+        status=movie_status,
+        theater_name=theater,
         available_only=available_only
     )
 
     return [MovieListResponse.from_orm(movie) for movie in movies]
 
 
-@router.get("/{movie_id}", response_model=MovieResponse)
-async def get_movie(
+@router.get("/coming-soon", response_model=List[MovieListResponse])
+async def get_coming_soon_movies(
+        limit: int = Query(default=10, ge=1, le=20, description="Máximo películas a retornar"),
+        db: Session = Depends(get_db)
+):
+    """Obtener próximos estrenos ordenados por fecha de estreno."""
+    movies = MovieService.get_movies_coming_soon(db=db, limit=limit)
+    return [MovieListResponse.from_orm(movie) for movie in movies]
+
+
+@router.get("/presales", response_model=List[MovieListResponse])
+async def get_presale_movies(
+        limit: int = Query(default=10, ge=1, le=20, description="Máximo películas a retornar"),
+        db: Session = Depends(get_db)
+):
+    """Obtener películas en preventa."""
+    movies = MovieService.get_movies_in_presale(db=db, limit=limit)
+    return [MovieListResponse.from_orm(movie) for movie in movies]
+
+
+@router.get("/{movie_id}", response_model=MovieWithShowtimesResponse)
+async def get_movie_with_showtimes(
         movie_id: int,
         db: Session = Depends(get_db)
 ):
-    """
-    Get detailed information about a specific movie (public endpoint).
-
-    Returns detailed movie information including availability.
-    Anyone can access this endpoint to see movie details.
-    """
-    movie = MovieService.get_movie_by_id(db=db, movie_id=movie_id, include_inactive=False)
+    """Obtener información detallada de una película incluyendo horarios y teatros."""
+    movie = MovieService.get_movie_with_showtimes(db=db, movie_id=movie_id, include_inactive=False)
 
     if not movie:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Movie not found"
+            detail="Película no encontrada"
         )
 
-    return MovieResponse.from_orm(movie)
+    return MovieWithShowtimesResponse.from_orm(movie)
+
+
+@router.get("/{movie_id}/showtimes", response_model=List[ShowtimeResponse])
+async def get_movie_showtimes(
+        movie_id: int,
+        theater_id: Optional[int] = Query(None, description="Filtrar por teatro específico"),
+        start_date: Optional[date] = Query(None, description="Fecha inicio (YYYY-MM-DD)"),
+        end_date: Optional[date] = Query(None, description="Fecha fin (YYYY-MM-DD)"),
+        db: Session = Depends(get_db)
+):
+    """Obtener horarios específicos de una película."""
+    # Verificar que la película existe
+    movie = MovieService.get_movie_by_id(db=db, movie_id=movie_id)
+    if not movie:
+        raise HTTPException(status_code=404, detail="Película no encontrada")
+
+    showtimes = MovieService.get_movie_showtimes(
+        db=db,
+        movie_id=movie_id,
+        theater_id=theater_id,
+        start_date=start_date,
+        end_date=end_date
+    )
+
+    return [ShowtimeResponse.from_orm(showtime) for showtime in showtimes]
+
+
+@router.get("/{movie_id}/theaters", response_model=List[TheaterResponse])
+async def get_movie_theaters(
+        movie_id: int,
+        db: Session = Depends(get_db)
+):
+    """Obtener todos los teatros donde se proyecta una película."""
+    movie = MovieService.get_movie_by_id(db=db, movie_id=movie_id)
+    if not movie:
+        raise HTTPException(status_code=404, detail="Película no encontrada")
+
+    theaters = MovieService.get_theaters_for_movie(db=db, movie_id=movie_id)
+    return [TheaterResponse.from_orm(theater) for theater in theaters]
 
 
 @router.get("/{movie_id}/availability", response_model=dict)
@@ -100,27 +198,52 @@ async def get_movie_availability(
         movie_id: int,
         db: Session = Depends(get_db)
 ):
-    """
-    Get movie ticket availability information (public endpoint).
-
-    Returns availability details for ticket purchasing decisions.
-    Anyone can check ticket availability before registering.
-    """
-    movie = MovieService.get_movie_by_id(db=db, movie_id=movie_id, include_inactive=False)
+    """Información completa de disponibilidad incluyendo teatros y horarios."""
+    movie = MovieService.get_movie_with_showtimes(db=db, movie_id=movie_id)
 
     if not movie:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Movie not found"
-        )
+        raise HTTPException(status_code=404, detail="Película no encontrada")
+
+    # Obtener próximos horarios (próximos 3 días)
+    today = date.today()
+    upcoming_showtimes = MovieService.get_movie_showtimes(
+        db=db,
+        movie_id=movie_id,
+        start_date=today,
+        end_date=today + timedelta(days=3)
+    )
+
+    # Agrupar por fecha
+    showtimes_by_date = {}
+    for showtime in upcoming_showtimes:
+        date_key = showtime.show_date.isoformat()
+        if date_key not in showtimes_by_date:
+            showtimes_by_date[date_key] = []
+
+        showtimes_by_date[date_key].append({
+            "theater": showtime.theater.name,
+            "time": showtime.show_time,
+            "format": showtime.format.value,
+            "available_tickets": showtime.available_tickets,
+            "capacity": showtime.capacity
+        })
+
+    # Información de disponibilidad de compra
+    availability_info = movie.get_purchase_availability_info()
 
     return {
         "movie_id": movie.id,
         "title": movie.title,
+        "director": movie.director,
+        "status": movie.status.value,
+        "is_presale": movie.is_presale,
+        "release_date": movie.formatted_release_date,
         "price": movie.price,
-        "max_capacity": movie.max_capacity,
-        "available_tickets": movie.available_tickets,
-        "sold_tickets": movie.sold_tickets,
+        "theaters": movie.theaters,
+        "total_capacity": movie.max_capacity,
+        "total_available": movie.available_tickets,
         "is_available": movie.is_available,
-        "occupancy_rate": movie.occupancy_rate
+        "occupancy_rate": movie.occupancy_rate,
+        "upcoming_showtimes": showtimes_by_date,
+        "purchase_availability": availability_info
     }
