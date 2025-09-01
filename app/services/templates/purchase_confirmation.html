@@ -76,6 +76,20 @@
             margin: 20px 0;
             border: 1px solid #e0e0e0;
         }
+        .showtime-info {
+            background: linear-gradient(45deg, #e8f5e8, #ffffff);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #c8e6c9;
+            border-left: 4px solid #4caf50;
+        }
+        .showtime-info h3 {
+            color: #2e7d32;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
         .tickets-section {
             background-color: #f8f9ff;
             border-radius: 8px;
@@ -162,141 +176,186 @@
             font-weight: bold;
             color: #2575fc;
         }
+        .theater-highlight {
+            background-color: #4caf50;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .datetime-highlight {
+            background-color: #ff9800;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">🎬 CINEMA TICKETS</div>
-            <h1>¡Tu entrada está confirmada!</h1>
-        </div>
-
-        <div class="content">
-            <div class="greeting">
-                ¡Hola {{ customer_name }}!
-            </div>
-
-            <p>¡Gracias por tu compra! Tu reserva para la película ha sido <span class="status-confirmed">CONFIRMADA</span>. A continuación encontrarás los detalles de tu función.</p>
-
-            <div class="movie-info">
-                <h2>🎬 Información de la Película</h2>
-                <div class="detail-item">
-                    <span class="detail-label">Película:</span>
-                    <span class="detail-value"><strong>{{ movie_title }}</strong></span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Género:</span>
-                    <span class="detail-value">{{ movie_genre }}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Duración:</span>
-                    <span class="detail-value">{{ movie_duration }} minutos</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Clasificación:</span>
-                    <span class="detail-value">{{ movie_rating }}</span>
-                </div>
-            </div>
-
-            <div class="details">
-                <h2>📋 Detalles de tu Compra</h2>
-                <div class="detail-item">
-                    <span class="detail-label">Orden:</span>
-                    <span class="detail-value">No. {{ purchase_id }}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Fecha:</span>
-                    <span class="detail-value">{{ purchase_date }}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Hora:</span>
-                    <span class="detail-value">{{ purchase_time }}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Cantidad:</span>
-                    <span class="detail-value">{{ quantity }} entrada(s)</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Total:</span>
-                    <span class="detail-value price-total">{{ total_amount }}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Estado:</span>
-                    <span class="detail-value status-confirmed">{{ status }}</span>
-                </div>
-            </div>
-
-            <div class="tickets-section">
-                <h3>🎫 Tus Entradas</h3>
-                <p>Presenta estos códigos en taquilla:</p>
-                {% for ticket in tickets %}
-                <div class="ticket-item">
-                    <div>
-                        <div class="ticket-code">{{ ticket.code }}</div>
-                        <small>Asiento: {{ ticket.seat }}</small>
-                    </div>
-                    <div>
-                        <span style="color: #28a745; font-weight: bold;">{{ ticket.status }}</span>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-
-            <div class="payment-info">
-                <h3>💳 Información de Pago</h3>
-                <div class="detail-item">
-                    <span class="detail-label">Tarjeta:</span>
-                    <span class="detail-value">**** **** **** {{ payment_last_four }}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Transacción:</span>
-                    <span class="detail-value">{{ transaction_id }}</span>
-                </div>
-            </div>
-
-            <div class="qr-section">
-                <h3>📱 Código QR de Verificación</h3>
-                <p>Presenta este código QR en taquilla:</p>
-                <div class="qr-code">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ qr_code_data }}"
-                         alt="Código QR de reserva"
-                         style="width: 150px; height: 150px; border: 2px solid #ddd; border-radius: 8px;">
-                </div>
-                <p><small style="font-family: monospace; color: #666;">{{ qr_code_data }}</small></p>
-            </div>
-
-            <div class="highlight">
-                <h4>📋 Instrucciones Importantes:</h4>
-                <ul>
-                    <li>Llega al menos <strong>20 minutos antes</strong> del inicio de la función</li>
-                    <li>Presenta tus códigos de entrada en la taquilla del cine</li>
-                    <li>Los códigos son <strong>únicos y no transferibles</strong></li>
-                    <li>Conserva este email como comprobante de compra</li>
-                    <li>En caso de cancelación, contacta nuestro soporte</li>
-                </ul>
-            </div>
-
-            <div style="text-align: center;">
-                <a href="#" class="button">Ver mis reservas</a>
-            </div>
-
-            <p>Si tienes alguna pregunta, no dudes en contactarnos en <a href="mailto:{{ support_email }}">{{ support_email }}</a></p>
-
-            <p><strong>¡Disfruta de la película! 🍿</strong></p>
-
-            <p>Atentamente,<br>El equipo de <strong>Cinema Tickets</strong></p>
-        </div>
-
-        <div class="footer">
-            <p><strong>© 2024 Cinema Tickets. Todos los derechos reservados.</strong></p>
-            <p>Este es un mensaje automático, por favor no respondas a esta dirección de correo.</p>
-            <p><small>Si recibiste este correo por error, por favor ignóralo.</small></p>
-            <p>
-                <a href="mailto:{{ support_email }}">Soporte</a> |
-                <a href="#">Política de Privacidad</a> |
-                <a href="#">Términos de Servicio</a>
-            </p>
-        </div>
+<div class="container">
+    <div class="header">
+        <div class="logo">🎬 CINEMA TICKETS</div>
+        <h1>¡Tu entrada está confirmada!</h1>
     </div>
+
+    <div class="content">
+        <div class="greeting">
+            ¡Hola {{ customer_name }}!
+        </div>
+
+        <p>¡Gracias por tu compra! Tu reserva para la película ha sido <span class="status-confirmed">CONFIRMADA</span>. A continuación encontrarás los detalles de tu función.</p>
+
+        <div class="movie-info">
+            <h2>🎬 Información de la Película</h2>
+            <div class="detail-item">
+                <span class="detail-label">Película:</span>
+                <span class="detail-value"><strong>{{ movie_title }}</strong></span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Género:</span>
+                <span class="detail-value">{{ movie_genre }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Duración:</span>
+                <span class="detail-value">{{ movie_duration }} minutos</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Clasificación:</span>
+                <span class="detail-value">{{ movie_rating }}</span>
+            </div>
+        </div>
+
+        <!-- NUEVA SECCIÓN: Información de la función -->
+        <div class="showtime-info">
+            <h3>📍 Información de la sala</h3>
+            <div class="detail-item">
+                <span class="detail-label">Teatro:</span>
+                <span class="detail-value">{{ theater_name }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Fecha:</span>
+                <span class="detail-value">
+                        <strong>{{ show_date }}</strong>
+                    </span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Horario:</span>
+                <span class="detail-value">{{ show_time }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Formato:</span>
+                <span class="detail-value">{{ show_format }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Ubicación:</span>
+                <span class="detail-value">{{ theater_location }}</span>
+            </div>
+        </div>
+
+        <div class="details">
+            <h2>📋 Detalles de tu Compra</h2>
+            <div class="detail-item">
+                <span class="detail-label">Orden:</span>
+                <span class="detail-value">No. {{ purchase_id }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Fecha:</span>
+                <span class="detail-value">{{ purchase_date }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Hora:</span>
+                <span class="detail-value">{{ purchase_time }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Cantidad:</span>
+                <span class="detail-value">{{ quantity }} entrada(s)</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Total:</span>
+                <span class="detail-value price-total">{{ total_amount }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Estado:</span>
+                <span class="detail-value status-confirmed">{{ status }}</span>
+            </div>
+        </div>
+
+        <div class="tickets-section">
+            <h3>🎫 Tus Entradas</h3>
+            <p>Presenta estos códigos en taquilla:</p>
+            {% for ticket in tickets %}
+            <div class="ticket-item">
+                <div>
+                    <div class="ticket-code">{{ ticket.code }}</div>
+                    <small>Asiento: {{ ticket.seat }}</small>
+                </div>
+                <div>
+                    <span style="color: #28a745; font-weight: bold;">{{ ticket.status }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="payment-info">
+            <h3>💳 Información de Pago</h3>
+            <div class="detail-item">
+                <span class="detail-label">Tarjeta:</span>
+                <span class="detail-value">**** **** **** {{ payment_last_four }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Transacción:</span>
+                <span class="detail-value">{{ transaction_id }}</span>
+            </div>
+        </div>
+
+        <div class="qr-section">
+            <h3>📱 Código QR de Verificación</h3>
+            <p>Presenta este código QR en taquilla:</p>
+            <div class="qr-code">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ qr_code_data }}"
+                     alt="Código QR de reserva"
+                     style="width: 150px; height: 150px; border: 2px solid #ddd; border-radius: 8px;">
+            </div>
+            <p><small style="font-family: monospace; color: #666;">{{ qr_code_data }}</small></p>
+        </div>
+
+        <div class="highlight">
+            <h4>📋 Instrucciones Importantes:</h4>
+            <ul>
+                <li>Llega al menos <strong>30 minutos antes</strong> del inicio de la función</li>
+                <li>Dirígete al <strong>{{ theater_name }}</strong> en {{ theater_location }}</li>
+                <li>Presenta tus códigos de entrada en la taquilla del cine</li>
+                <li>Los códigos son <strong>únicos y no transferibles</strong></li>
+                <li>Conserva este email como comprobante de compra</li>
+                <li>En caso de cancelación, contacta nuestro soporte</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="#" class="button">Ver mis reservas</a>
+        </div>
+
+        <p>Si tienes alguna pregunta, no dudes en contactarnos en <a href="mailto:{{ support_email }}">{{ support_email }}</a></p>
+
+        <p><strong>¡Disfruta de la película! 🍿</strong></p>
+
+        <p>Atentamente,<br>El equipo de <strong>Cinema Tickets</strong></p>
+    </div>
+
+    <div class="footer">
+        <p><strong>© 2024 Cinema Tickets. Todos los derechos reservados.</strong></p>
+        <p>Este es un mensaje automático, por favor no respondas a esta dirección de correo.</p>
+        <p><small>Si recibiste este correo por error, por favor ignóralo.</small></p>
+        <p>
+            <a href="mailto:{{ support_email }}">Soporte</a> |
+            <a href="#">Política de Privacidad</a> |
+            <a href="#">Términos de Servicio</a>
+        </p>
+    </div>
+</div>
 </body>
 </html>

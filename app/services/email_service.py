@@ -99,7 +99,7 @@ class EmailService:
     @staticmethod
     async def send_purchase_confirmation(user: User, purchase: Purchase, tickets: List[Ticket]) -> bool:
         """
-        Send purchase confirmation email using HTML template.
+        Send purchase confirmation email using HTML template with showtime information.
 
         Args:
             user: User who made the purchase
@@ -110,6 +110,50 @@ class EmailService:
             True if email sent successfully
         """
         try:
+            # Obtener información del primer showtime disponible para la película
+            # En un sistema real, deberías asociar la compra a un showtime específico
+            from sqlalchemy.orm import Session
+            from app.core.database import SessionLocal
+            from app.models.theater import MovieShowtime
+            from datetime import date
+
+            db = SessionLocal()
+            try:
+                # Buscar el próximo showtime para esta película
+                # NOTA: En producción, deberías tener el showtime_id en la compra
+                next_showtime = db.query(MovieShowtime).filter(
+                    MovieShowtime.movie_id == purchase.movie_id,
+                    MovieShowtime.show_date >= date.today(),
+                    MovieShowtime.is_active == True
+                ).order_by(MovieShowtime.show_date, MovieShowtime.show_time).first()
+
+                # Valores por defecto si no hay showtime
+                theater_name = "Teatro Principal"
+                theater_location = "Centro Comercial"
+                show_date = "Por confirmar"
+                show_time = "Por confirmar"
+                show_format = "2D Doblado"
+
+                if next_showtime:
+                    theater_name = next_showtime.theater.name
+                    theater_location = next_showtime.theater.location
+                    show_date = next_showtime.show_date.strftime('%d de %B de %Y')
+                    show_time = next_showtime.show_time
+
+                    # Formatear el tipo de función
+                    format_names = {
+                        "2d_dubbed": "2D Doblado",
+                        "2d_subtitled": "2D Subtitulado",
+                        "3d": "3D",
+                        "imax": "IMAX"
+                    }
+                    show_format = format_names.get(next_showtime.format.value, "2D Doblado")
+
+            except Exception as e:
+                logger.warning(f"Error getting showtime info: {e}")
+            finally:
+                db.close()
+
             # Prepare template data
             template_data = {
                 'customer_name': user.full_name,
@@ -117,6 +161,13 @@ class EmailService:
                 'movie_genre': purchase.movie.genre,
                 'movie_duration': purchase.movie.duration,
                 'movie_rating': purchase.movie.rating,
+
+                'theater_name': theater_name,
+                'theater_location': theater_location,
+                'show_date': show_date,
+                'show_time': show_time,
+                'show_format': show_format,
+
                 'purchase_id': purchase.id,
                 'purchase_date': purchase.created_at.strftime('%d/%m/%Y'),
                 'purchase_time': purchase.created_at.strftime('%H:%M'),
@@ -131,8 +182,10 @@ class EmailService:
                     }
                     for ticket in tickets
                 ],
-                'payment_last_four': purchase.payment_info.get('last_four', '****') if purchase.payment_info else '****',
-                'transaction_id': purchase.payment_info.get('transaction_id', 'N/A') if purchase.payment_info else 'N/A',
+                'payment_last_four': purchase.payment_info.get('last_four',
+                                                               '****') if purchase.payment_info else '****',
+                'transaction_id': purchase.payment_info.get('transaction_id',
+                                                            'N/A') if purchase.payment_info else 'N/A',
                 'qr_code_data': f"CINEMA-{purchase.id}-{tickets[0].ticket_code if tickets else 'NOTICKET'}",
                 'support_email': 'support@cinema.com'
             }
