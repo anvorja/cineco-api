@@ -46,11 +46,21 @@ async def login(
     Retorna un token JWT de acceso para autenticación en la API.
     """
     result = AuthService.login_user(db, login_data)
+
     return {
         "access_token": result["access_token"],
-        "token_type": result["token_type"]
+        "token_type": result["token_type"],
+        "user": {
+            "id": result["user"].id,
+            "email": result["user"].email,
+            "firstName": result["user"].first_name,
+            "lastName": result["user"].last_name,
+            "role": result["user"].role.value,
+            "phone": result["user"].phone,
+            "full_name": result["user"].full_name,
+            "is_active": result["user"].is_active
+        }
     }
-
 
 @router.post("/logout", response_model=LogoutResponse)
 async def logout(

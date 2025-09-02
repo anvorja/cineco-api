@@ -40,19 +40,29 @@ class UserLogin(BaseModel):
 
 
 class Token(BaseModel):
-    """Esquema para respuesta con token JWT"""
-    access_token: str = Field(..., description="Token de acceso JWT")
-    token_type: str = Field(default="bearer", description="Tipo de token")
+    """Esquema para respuesta de autenticación con token"""
+    access_token: str
+    token_type: str = "bearer"
+    user: dict
 
     model_config = {
         "json_schema_extra": {
             "example": {
-                "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-                "token_type": "bearer"
+                "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+                "token_type": "bearer",
+                "user": {
+                    "id": 1,
+                    "email": "juan.perez@email.com",
+                    "firstName": "Juan",
+                    "lastName": "Pérez",
+                    "role": "customer",
+                    "phone": "3201234567",
+                    "full_name": "Juan Pérez",
+                    "is_active": True
+                }
             }
         }
     }
-
 
 class LogoutResponse(BaseModel):
     """Esquema para respuesta de logout"""
