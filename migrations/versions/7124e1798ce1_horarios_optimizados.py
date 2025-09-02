@@ -1,8 +1,8 @@
-"""Full data cineco
+"""Horarios optimizados
 
-Revision ID: 39f97429ff0d
+Revision ID: 7124e1798ce1
 Revises: 
-Create Date: 2025-09-02 01:59:11.167753
+Create Date: 2025-09-02 07:15:27.081791
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '39f97429ff0d'
+revision: str = '7124e1798ce1'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None

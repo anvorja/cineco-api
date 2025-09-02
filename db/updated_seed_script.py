@@ -20,7 +20,7 @@ from app.models.base import Base
 
 
 def create_seed_data():
-    """Crear datos de seed completos con fechas dinámicas"""
+    """Crear datos de seed completos con horarios optimizados"""
     
     # Crear todas las tablas
     Base.metadata.create_all(bind=engine)
@@ -511,15 +511,17 @@ def create_seed_data():
 
 
 def create_intelligent_showtimes(db: Session, movies: list, theaters: list, today: date):
-    """Crear horarios inteligentes para las próximas 2 semanas"""
-    
-    # Horarios estándar por día
+    """Crear horarios inteligentes optimizados - 3 horarios por teatro por día"""
+
+    # 🎯 HORARIOS FIJOS Y SIMPLES POR DÍA
+    # Solo 3 horarios estándar para mantener simplicidad
     standard_times = [
-        {"time": "12:30", "format": ShowtimeFormat.TWO_D_DUBBED},
         {"time": "15:20", "format": ShowtimeFormat.TWO_D_DUBBED},
-        {"time": "18:10", "format": ShowtimeFormat.TWO_D_SUBTITLED}, 
+        {"time": "18:10", "format": ShowtimeFormat.TWO_D_SUBTITLED},
         {"time": "21:00", "format": ShowtimeFormat.TWO_D_SUBTITLED},
     ]
+
+    showtimes = []
     
     # Horarios adicionales para fines de semana
     weekend_times = [
@@ -528,34 +530,53 @@ def create_intelligent_showtimes(db: Session, movies: list, theaters: list, toda
     ]
     
     showtimes = []
-    
+
     # Crear horarios para los próximos 14 días
     for day_offset in range(14):
         show_date = today + timedelta(days=day_offset)
-        is_weekend = show_date.weekday() >= 5  # Sábado y domingo
-        
-        # Solo crear horarios para películas en cartelera
+
+        # Solo películas en cartelera
         active_movies = [m for m in movies if m.status == MovieStatus.IN_THEATERS]
-        
-        for movie in active_movies:
-            for theater in theaters:
-                times_to_use = standard_times + (weekend_times if is_weekend else [])
-                
-                for schedule in times_to_use:
-                    showtime = MovieShowtime(
-                        movie_id=movie.id,
-                        theater_id=theater.id,
-                        show_date=show_date,
-                        show_time=schedule["time"],
-                        format=schedule["format"],
-                        capacity=100,
-                        available_tickets=100
-                    )
-                    showtimes.append(showtime)
-    
+
+        # 🔄 ROTACIÓN SIMPLE: Una película diferente por teatro cada día
+        for theater_index, theater in enumerate(theaters):
+            # Rotar películas por teatro para distribución equilibrada
+            movie_index = (day_offset + theater_index) % len(active_movies)
+            selected_movie = active_movies[movie_index]
+
+            # Solo 3 horarios por teatro por día
+            for schedule in standard_times:
+                showtime = MovieShowtime(
+                    movie_id=selected_movie.id,
+                    theater_id=theater.id,
+                    show_date=show_date,
+                    show_time=schedule["time"],
+                    format=schedule["format"],
+                    capacity=100,
+                    available_tickets=100
+                )
+                showtimes.append(showtime)
+
     db.add_all(showtimes)
     db.commit()
-    print(f"✅ {len(showtimes)} horarios creados para los próximos 14 días")
+    print(f"✅ {len(showtimes)} horarios creados (3 por teatro por día)")
+
+    # 📊 Estadísticas de validación
+    total_days = 14
+    total_theaters = len(theaters)
+    expected_total = total_days * total_theaters * 3  # 3 horarios por teatro por día
+
+    print(f"📈 Validación de horarios:")
+    print(f"   - Días: {total_days}")
+    print(f"   - Teatros: {total_theaters}")
+    print(f"   - Horarios por teatro/día: 3")
+    print(f"   - Total esperado: {expected_total}")
+    print(f"   - Total creado: {len(showtimes)}")
+
+    if len(showtimes) == expected_total:
+        print("✅ Horarios creados correctamente")
+    else:
+        print("⚠️  Discrepancia en cantidad de horarios")
 
 
 def update_dates_and_showtimes(db: Session):
