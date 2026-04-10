@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     EMAIL_APP_PASSWORD: str
 
     # App Settings
-    DEBUG: bool = True
+    DEBUG: bool = False
 
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")
     def assemble_cors_origins(cls, v: Any) -> List[str]:

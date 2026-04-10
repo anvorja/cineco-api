@@ -8,9 +8,9 @@ engine = create_engine(
     settings.DATABASE_URL,
     pool_pre_ping=True,      # Verifica conexiones antes de usarlas
     pool_recycle=300,        # Recicla conexiones cada 5 minutos
-    pool_size=10,            # Conexiones base en el pool
-    max_overflow=20,         # Conexiones adicionales bajo carga
-    pool_timeout=30,         # Segundos de espera antes de lanzar TimeoutError
+    pool_size=2,             # Conexiones base en el pool (Railway free tier: 21 max)
+    max_overflow=3,          # Conexiones adicionales bajo carga (total máx: 5 por worker)
+    pool_timeout=10,         # Segundos de espera antes de lanzar TimeoutError
     echo=settings.DEBUG      # SQL logging solo en debug mode
 )
 

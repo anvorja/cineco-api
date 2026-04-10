@@ -8,6 +8,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
+from sqlalchemy.exc import TimeoutError as SQLAlchemyTimeoutError
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
@@ -127,6 +128,17 @@ async def health_check():
         "environment": "development" if settings.DEBUG else "production",
         "database": db_status
     }
+
+@app.exception_handler(SQLAlchemyTimeoutError)
+async def db_timeout_handler(_request: Request, exc: SQLAlchemyTimeoutError):
+    logger.error(f"Database pool exhausted: {exc}")
+    return JSONResponse(
+        status_code=503,
+        content={
+            "error": "Service Unavailable",
+            "message": "El servidor está bajo alta carga. Intenta de nuevo en unos segundos."
+        }
+    )
 
 @app.exception_handler(500)
 async def internal_server_error_handler(_request: Request, exc: Exception):
