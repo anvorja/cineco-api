@@ -2,7 +2,7 @@
 
 API REST para sistema de compra de entradas de cine desarrollada con FastAPI y PostgreSQL.
 
-## 🏗️ Arquitectura
+## Arquitectura
 
 - **Backend**: FastAPI (Python 3.12+)
 - **Base de datos**: PostgreSQL + SQLAlchemy + Alembic + 
@@ -18,22 +18,22 @@ API REST para sistema de compra de entradas de cine desarrollada con FastAPI y P
 - Se recomienda usar el parámetro lifespan del objeto FastAPI, que funciona con un @asynccontextmanager.
 
 ### 2. **SQLAlchemy 2.0 moderno**
-   - ✅ **Mejores tipos** - Sistema de tipos más robusto y expresivo
-   - ⚡ **Mejor rendimiento** - Optimizaciones significativas en el ORM
+   - **Mejores tipos** - Sistema de tipos más robusto y expresivo
+   - **Mejor rendimiento** - Optimizaciones significativas en el ORM
 
 ### 3. **Type safety completa**
-   - 🔍 **MyPy integration** - Verificación estática de tipos integrada
+   - **MyPy integration** - Verificación estática de tipos integrada
 
 ### 4. **Timezone aware**
-   - 🌍 **Timestamps conscientes** - Manejo adecuado de zonas horarias
-   - ⏰ **UTC por defecto** - Almacenamiento consistente en UTC
+   - **Timestamps conscientes** - Manejo adecuado de zonas horarias
+   - **UTC por defecto** - Almacenamiento consistente en UTC
 
 ### 5. **Menos imports circulares**
-   - 🏗️ **Base definido apropiadamente** - Estructura de imports optimizada
-   - 🔄 **Organización clara** - Arquitectura sin dependencias circulares
+   - **Base definido apropiadamente** - Estructura de imports optimizada
+   - **Organización clara** - Arquitectura sin dependencias circulares
 
 
-## 📁 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 .
@@ -90,7 +90,7 @@ API REST para sistema de compra de entradas de cine desarrollada con FastAPI y P
 └── README.md
 ```
 
-## 🗄️ Modelo de Base de Datos
+## Modelo de Base de Datos
 
 ### Tablas principales:
 
@@ -184,7 +184,7 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 uvicorn app.main:app --reload
 ```
 
-## 📋 Funcionalidades
+## Funcionalidades
 
 ### Módulos Implementados:
 
@@ -212,7 +212,7 @@ uvicorn app.main:app --reload
 - Consulta de compras
 - Reportes básicos
 
-## 🛠️ API Endpoints
+## API Endpoints
 
 #### Documentar todo con OpenAPI/Swagger
 
@@ -282,7 +282,7 @@ GET /api/v1/admin/purchases/movie/{movie_id} # Compras de una película específ
 GET /api/v1/admin/purchases/user/{user_id}   # Compras de un cliente específico
 GET /api/v1/admin/reports/sales    # Reporte consolidado de ventas
 ```
-## 🔒️ Protección de rutas
+## Protección de rutas
 
 ### Rutas PÚBLICAS (sin JWT):
 
@@ -332,7 +332,7 @@ GET /api/v1/admin/reports/sales
 
 #### El assessment es claro: "El módulo de compras debe permitir la compra solo a usuarios registrados" y toda la administración es implícitamente para administradores.
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Ejecutar tests
@@ -342,14 +342,14 @@ pytest tests/
 pytest --cov=app tests/
 ```
 
-## 📖 Documentación API
+## Documentación API
 
 Una vez ejecutándose el servidor, accede a:
 
 - **Swagger UI**: http://localhost:8000/docs
 - **ReDoc**: http://localhost:8000/redoc
 
-## 🔧 Configuración Pydantic v2
+## Configuración Pydantic v2
 
 ```
 from pydantic import BaseSettings
@@ -368,7 +368,7 @@ class Settings(BaseSettings):
 #### En Pydantic 2.x, el parámetro regex fue reemplazado por *pattern*
 
 
-## 🚨 Envío de Emails para notificaciones
+## Envío de Emails para notificaciones
 ### Puertos SMTP y Protocolos:
 
 ### **Puerto 465 (SSL Directo) - RECOMENDADO**
@@ -401,7 +401,7 @@ async with aiosmtplib.SMTP(
 - **Puerto 465** → `use_tls=True` (sin `starttls()`)
 - **Puerto 587** → `starttls()` (sin `use_tls=True`)
 
-## 🐳 Docker
+## Docker
 
 ### Desarrollo
 
@@ -415,7 +415,7 @@ docker-compose up -d
 docker-compose -f docker-compose.prod.yml up -d
 ```
 
-## 📝 Seed Data
+## Seed Data
 
 Para poblar la base de datos con datos de prueba:
 
@@ -441,7 +441,7 @@ Esto creará la data de seed_script:
 - Películas de ejemplo
 - Usuarios de prueba
 
-## 🔒 Seguridad
+## Seguridad
 
 - Contraseñas hasheadas con bcrypt
 - JWT tokens con expiración
@@ -449,8 +449,15 @@ Esto creará la data de seed_script:
 - CORS configurado
 - Rate limiting (opcional)
 
-## 📊 Monitoreo
+## Monitoreo
 
 - Logs estructurados
 - Health check endpoint: `/health`
 - Métricas básicas de rendimiento
+
+## Render
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
+
+PYTHON_VERSION environment varia
+
+![img.png](img.png)
