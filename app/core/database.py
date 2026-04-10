@@ -8,6 +8,9 @@ engine = create_engine(
     settings.DATABASE_URL,
     pool_pre_ping=True,      # Verifica conexiones antes de usarlas
     pool_recycle=300,        # Recicla conexiones cada 5 minutos
+    pool_size=10,            # Conexiones base en el pool
+    max_overflow=20,         # Conexiones adicionales bajo carga
+    pool_timeout=30,         # Segundos de espera antes de lanzar TimeoutError
     echo=settings.DEBUG      # SQL logging solo en debug mode
 )
 

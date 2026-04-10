@@ -1,7 +1,7 @@
 # app/services/movie_service.py
 from typing import List, Optional, Dict, Any
 from datetime import date, timedelta
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, joinedload, selectinload
 from sqlalchemy import desc, or_, and_
 from fastapi import HTTPException, status
 
@@ -112,7 +112,7 @@ class MovieService:
         """Obtener películas con filtros avanzados"""
 
         query = db.query(Movie).options(
-            joinedload(Movie.theater_movies).joinedload(TheaterMovie.theater)
+            selectinload(Movie.theater_movies).selectinload(TheaterMovie.theater)
         )
 
         # Filtros básicos
