@@ -16,7 +16,7 @@ from app.schemas.movie import (
 router = APIRouter()
 
 
-@router.get("/", response_model=List[MovieListResponse])
+@router.get("", response_model=List[MovieListResponse])
 async def get_movies(
         skip: int = Query(default=0, ge=0, description="Registros a omitir"),
         limit: int = Query(default=10, ge=1, le=50, description="Máximo registros a retornar"),

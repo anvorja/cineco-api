@@ -11,7 +11,7 @@ from app.models.movie import Movie, MovieStatus
 router = APIRouter()
 
 
-@router.get("/", response_model=List[TheaterResponse])
+@router.get("", response_model=List[TheaterResponse])
 async def get_all_theaters(db: Session = Depends(get_db)):
     """
     Obtener lista de teatros disponibles (público).

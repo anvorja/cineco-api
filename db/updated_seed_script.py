@@ -141,10 +141,10 @@ def create_seed_data():
                 "status": MovieStatus.IN_THEATERS,
                 "is_presale": False,
                 "release_date": today - timedelta(days=10),
-                "poster_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_poster/1/6/9/9/79961-1-esl-CO/2a0d94e039d9-poster480x670.png",
-                "backdrop_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_embed/6/6/9/9/79966-1-esl-CO/8615e7249c91-postertrailer100x510.jpg",
-                "detail_1_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/4/6/9/9/79964-1-esl-CO/e413e41a5920-banizq510.jpg",
-                "detail_2_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/5/6/9/9/79965-1-esl-CO/2921f1428698-bander510.jpg"
+                "poster_url": "https://placehold.co/480x670.png",
+                "backdrop_url": "https://placehold.co/1000x510.png",
+                "detail_1_url": "https://placehold.co/510x510.png",
+                "detail_2_url": "https://placehold.co/510x510.png"
             },
             {
                 "title": "Otro Viernes de Locos",
@@ -158,10 +158,10 @@ def create_seed_data():
                 "status": MovieStatus.IN_THEATERS,
                 "is_presale": False,
                 "release_date": today - timedelta(days=24),  # Estrenada hace 24 días
-                "poster_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_poster/0/5/6/9/79650-1-esl-CO/a0899049400e-480x670_poster_cinecolombia.png",
-                "backdrop_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_embed/5/5/6/9/79655-1-esl-CO/f4815e2d6412-1000x510_imagentrailer_cinecolombia.jpg",
-                "detail_1_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/3/5/6/9/79653-1-esl-CO/9da770cbc18f-510x511_bannerizq_cinecolombia.jpg",
-                "detail_2_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/4/5/6/9/79654-1-esl-CO/e0473ced12c9-510x510_bannerder_cinecolombia.jpg"
+                "poster_url": "https://placehold.co/480x670.png",
+                "backdrop_url": "https://placehold.co/1000x510.png",
+                "detail_1_url": "https://placehold.co/510x510.png",
+                "detail_2_url": "https://placehold.co/510x510.png"
             },
             {
                 "title": "Sketch Dibujos Animados",
@@ -175,10 +175,10 @@ def create_seed_data():
                 "status": MovieStatus.IN_THEATERS,
                 "is_presale": False,
                 "release_date": today - timedelta(days=3),
-                "poster_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_poster/7/5/4/0/80457-1-esl-CO/b9fbdaa8607e-480x670-9-.jpg",
-                "backdrop_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_embed/2/6/4/0/80462-1-esl-CO/a9300cc64c44-1000x510-11-.jpg",
-                "detail_1_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/0/6/4/0/80460-1-esl-CO/c313573a01ba-510x510-9-.jpg",
-                "detail_2_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/1/6/4/0/80461-1-esl-CO/7fbe14fda17d-510x510-9-.jpg"
+                "poster_url": "https://placehold.co/480x670.png",
+                "backdrop_url": "https://placehold.co/1000x510.png",
+                "detail_1_url": "https://placehold.co/510x510.png",
+                "detail_2_url": "https://placehold.co/510x510.png"
             },
             {
                 "title": "La Colina de las Amapolas",
@@ -192,10 +192,10 @@ def create_seed_data():
                 "status": MovieStatus.IN_THEATERS,
                 "is_presale": False,
                 "release_date": today - timedelta(days=3),
-                "poster_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_poster/8/3/4/1/81438-2-esl-CO/db9a40298079-poster-oficial_-480x670-.jpg",
-                "backdrop_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_embed/3/4/4/1/81443-1-esl-CO/175146b755c6-trailer_-1000x510-.png",
-                "detail_1_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/1/4/4/1/81441-1-esl-CO/e803866132d9-banner_izq_-510x510-.png",
-                "detail_2_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/2/4/4/1/81442-1-esl-CO/f1515c39318d-banner_drcho_-510x510-.png"
+                "poster_url": "https://placehold.co/480x670.png",
+                "backdrop_url": "https://placehold.co/1000x510.png",
+                "detail_1_url": "https://placehold.co/510x510.png",
+                "detail_2_url": "https://placehold.co/510x510.png"
             },
             {
                 "title": "Los Roses",
@@ -209,10 +209,10 @@ def create_seed_data():
                 "status": MovieStatus.IN_THEATERS,
                 "is_presale": False,
                 "release_date": today - timedelta(days=3),  # Estrenada hace 3 días
-                "poster_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_poster/4/6/7/9/79764-1-esl-CO/f720651fc698-480x670_poster_interna_cinecolombia.png",
-                "backdrop_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_embed/9/6/7/9/79769-1-esl-CO/e5124787ae08-1000x510_sin_texto_img-a-la-derecha-imagentrailer_cinecolombia.jpg",
-                "detail_1_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/7/6/7/9/79767-1-esl-CO/839b45023c84-510x511_bannerizq_cinecolombia.jpg",
-                "detail_2_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/8/6/7/9/79768-1-esl-CO/589f0d946329-510x510_bannerder_cinecolombia.jpg"
+                "poster_url": "https://placehold.co/480x670.png",
+                "backdrop_url": "https://placehold.co/1000x510.png",
+                "detail_1_url": "https://placehold.co/510x510.png",
+                "detail_2_url": "https://placehold.co/510x510.png"
             },
             {
                 "title": "Atrapado Robando",
@@ -226,10 +226,10 @@ def create_seed_data():
                 "status": MovieStatus.IN_THEATERS,
                 "is_presale": False,
                 "release_date": today - timedelta(days=3),  # Estrenada hace 3 días
-                "poster_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_poster/2/6/3/1/81362-1-esl-CO/c0eb13751ac8-ar-banner-web-480x670px-fecha.jpg",
-                "backdrop_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_embed/7/6/3/1/81367-1-esl-CO/647fe2937b8f-ar-3-imagen-trailer.jpg",
-                "detail_1_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/5/6/3/1/81365-1-esl-CO/b04b6ebe747b-ar-4-banner-izquierdo.jpg",
-                "detail_2_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/6/6/3/1/81366-1-esl-CO/a5b4f60b7b26-ar-5-banner-derecho.jpg"
+                "poster_url": "https://placehold.co/480x670.png",
+                "backdrop_url": "https://placehold.co/1000x510.png",
+                "detail_1_url": "https://placehold.co/510x510.png",
+                "detail_2_url": "https://placehold.co/510x510.png"
             },
             {
                 "title": "La Hora de la Desaparición",
@@ -243,10 +243,10 @@ def create_seed_data():
                 "status": MovieStatus.IN_THEATERS,
                 "is_presale": False,
                 "release_date": today - timedelta(days=3),  # Estrenada hace 3 días
-                "poster_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_poster/8/8/6/9/79688-1-esl-CO/2f37f371a830-warner_weapons_cinecol_480x670.jpg",
-                "backdrop_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_embed/3/9/6/9/79693-1-esl-CO/53305451b0f6-warner_weapons_cinecol_1000x510.jpg",
-                "detail_1_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/1/9/6/9/79691-1-esl-CO/e4ce6ac559eb-warner_weapons_cinecol_510x510.jpg",
-                "detail_2_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/2/9/6/9/79692-1-esl-CO/620e3ad9fe89-warner_weapons_cinecol_510x510.jpg"
+                "poster_url": "https://placehold.co/480x670.png",
+                "backdrop_url": "https://placehold.co/1000x510.png",
+                "detail_1_url": "https://placehold.co/510x510.png",
+                "detail_2_url": "https://placehold.co/510x510.png"
             },
             {
                 "title": "La Creación De Los Dioses: El Reino",
@@ -260,10 +260,10 @@ def create_seed_data():
                 "status": MovieStatus.IN_THEATERS,
                 "is_presale": False,
                 "release_date": today - timedelta(days=3),  # Estrenada hace 3 días
-                "poster_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_poster/0/9/7/0/80790-1-esl-CO/b95d013a97e1-2b-poster.png",
-                "backdrop_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_embed/5/9/7/0/80795-1-esl-CO/1747590dc672-3a-imagentrailer.jpg",
-                "detail_1_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/3/9/7/0/80793-1-esl-CO/04d4ea723cc3-4-5a-bannerizqder.jpg",
-                "detail_2_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/4/9/7/0/80794-1-esl-CO/a2f85add2d51-4-5b-bannerizqder.jpg"
+                "poster_url": "https://placehold.co/480x670.png",
+                "backdrop_url": "https://placehold.co/1000x510.png",
+                "detail_1_url": "https://placehold.co/510x510.png",
+                "detail_2_url": "https://placehold.co/510x510.png"
             },
             {
                 "title": "Los 4 Fantásticos: Primeros pasos",
@@ -277,10 +277,10 @@ def create_seed_data():
                 "status": MovieStatus.IN_THEATERS,
                 "is_presale": False,
                 "release_date": today - timedelta(days=7),
-                "poster_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_poster/0/9/8/6/76890-5-esl-CO/101b0233f37f-480x670_poster_cinecolombia.png",
-                "backdrop_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_embed/5/9/8/6/76895-5-esl-CO/bf7d06ba02a8-1024x512_bannertw_cinecolombia.jpg",
-                "detail_1_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/3/9/8/6/76893-4-esl-CO/e00131d79367-510x511_bannerizq_cinecolombia.png",
-                "detail_2_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/4/9/8/6/76894-4-esl-CO/46267e96e0f8-510x510_bannerder_cinecolombia.png"
+                "poster_url": "https://placehold.co/480x670.png",
+                "backdrop_url": "https://placehold.co/1000x510.png",
+                "detail_1_url": "https://placehold.co/510x510.png",
+                "detail_2_url": "https://placehold.co/510x510.png"
             },
             {
                 "title": "Haz que regrese",
@@ -294,10 +294,10 @@ def create_seed_data():
                 "status": MovieStatus.IN_THEATERS,
                 "is_presale": False,
                 "release_date": today - timedelta(days=7),
-                "poster_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_poster/6/7/6/0/80676-1-esl-CO/7fea5c8ecb42-hqr-banner-web-480x670px-exc.jpg",
-                "backdrop_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_embed/1/8/6/0/80681-1-esl-CO/683ac201f76f-hqr-3-imagen-trailer.jpg",
-                "detail_1_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/9/7/6/0/80679-1-esl-CO/78a139888b70-hqr-5-banner-derecho.jpg",
-                "detail_2_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/0/8/6/0/80680-1-esl-CO/306f15213f0f-hqr-5-banner-derecho.jpg"
+                "poster_url": "https://placehold.co/480x670.png",
+                "backdrop_url": "https://placehold.co/1000x510.png",
+                "detail_1_url": "https://placehold.co/510x510.png",
+                "detail_2_url": "https://placehold.co/510x510.png"
             },
             {
                 "title": "Drácula",
@@ -311,10 +311,10 @@ def create_seed_data():
                 "status": MovieStatus.IN_THEATERS,
                 "is_presale": False,
                 "release_date": today - timedelta(days=17),
-                "poster_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_poster/0/4/8/9/79840-1-esl-CO/569e08973200-2_poster_480x670.png",
-                "backdrop_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_embed/5/4/8/9/79845-1-esl-CO/488504e5ff77-3_imagentrailer_1000x510.jpg",
-                "detail_1_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/3/4/8/9/79843-1-esl-CO/5dcc5c51629e-4_bannerizq_510x510.jpg",
-                "detail_2_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/4/4/8/9/79844-1-esl-CO/48f72947e827-5_bannerder_510x510.jpg"
+                "poster_url": "https://placehold.co/480x670.png",
+                "backdrop_url": "https://placehold.co/1000x510.png",
+                "detail_1_url": "https://placehold.co/510x510.png",
+                "detail_2_url": "https://placehold.co/510x510.png"
             },
             {
                 "title": "El Conjuro 4: Últimos Ritos",
@@ -328,10 +328,10 @@ def create_seed_data():
                 "status": MovieStatus.IN_THEATERS,
                 "is_presale": False,
                 "release_date": today - timedelta(days=5),
-                "poster_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_poster/3/0/3/0/80303-2-esl-CO/7381965b1505-warner_theconjuring_cinecol_480x670.jpg",
-                "backdrop_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_embed/8/0/3/0/80308-2-esl-CO/812a7d6b4522-warner_theconjuring_cinecol_1000x510.jpg",
-                "detail_1_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/6/0/3/0/80306-2-esl-CO/3cbafc21ce34-warner_theconjuring_cinecol_510x510.jpg",
-                "detail_2_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/7/0/3/0/80307-2-esl-CO/d840c3f43af0-warner_theconjuring_cinecol_510x510.jpg"
+                "poster_url": "https://placehold.co/480x670.png",
+                "backdrop_url": "https://placehold.co/1000x510.png",
+                "detail_1_url": "https://placehold.co/510x510.png",
+                "detail_2_url": "https://placehold.co/510x510.png"
             },
             # PRÓXIMOS ESTRENOS
             {
@@ -346,10 +346,10 @@ def create_seed_data():
                 "status": MovieStatus.IN_THEATERS,
                 "is_presale": False,
                 "release_date": today + timedelta(days=10),
-                "poster_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_poster/8/5/0/1/81058-1-esl-CO/d7da051741b6-poster_-480x670-.jpg",
-                "backdrop_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_embed/3/6/0/1/81063-1-esl-CO/7e4f1fe2f3ed-trailer_-1000x510-.jpg",
-                "detail_1_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/1/6/0/1/81061-1-esl-CO/5b002b9bc01b-banner_izq_-510x510-.jpg",
-                "detail_2_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/2/6/0/1/81062-1-esl-CO/fe0851687daf-banner_drcho_-510x510-.jpg"
+                "poster_url": "https://placehold.co/480x670.png",
+                "backdrop_url": "https://placehold.co/1000x510.png",
+                "detail_1_url": "https://placehold.co/510x510.png",
+                "detail_2_url": "https://placehold.co/510x510.png"
             },
             {
                 "title": "Putin",
@@ -363,10 +363,10 @@ def create_seed_data():
                 "status": MovieStatus.COMING_SOON,
                 "is_presale": False,
                 "release_date": today + timedelta(days=4),  # Estreno en 4 dias
-                "poster_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_poster/8/6/8/0/80868-1-esl-CO/50735f987c14-2_poster_480x670.png",
-                "backdrop_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_embed/3/7/8/0/80873-1-esl-CO/0faed51bf1db-3_imagentrailer_1000x510.jpg",
-                "detail_1_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/1/7/8/0/80871-1-esl-CO/79ef50ab69e8-4_bannerizq_510x510.jpg",
-                "detail_2_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/2/7/8/0/80872-1-esl-CO/c5f9c6ce4b75-5_bannerder_510x510.jpg"
+                "poster_url": "https://placehold.co/480x670.png",
+                "backdrop_url": "https://placehold.co/1000x510.png",
+                "detail_1_url": "https://placehold.co/510x510.png",
+                "detail_2_url": "https://placehold.co/510x510.png"
             },
             {
                 "title": "Amores Compartidos",
@@ -380,10 +380,10 @@ def create_seed_data():
                 "status": MovieStatus.COMING_SOON,
                 "is_presale": False,
                 "release_date": today + timedelta(days=10),
-                "poster_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_poster/4/3/1/1/81134-1-esl-CO/1e969ab06d4b-split_cineco_pstr-dskp_480x670.jpg",
-                "backdrop_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_embed/9/3/1/1/81139-1-esl-CO/015d4da14f26-split_cineco_bnnr-trlr_1000x510.jpg",
-                "detail_1_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/7/3/1/1/81137-1-esl-CO/246eb389a66c-split_cineco_bnnr-izq_510x510.jpg",
-                "detail_2_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/7/3/1/1/81137-1-esl-CO/246eb389a66c-split_cineco_bnnr-izq_510x510.jpg"
+                "poster_url": "https://placehold.co/480x670.png",
+                "backdrop_url": "https://placehold.co/1000x510.png",
+                "detail_1_url": "https://placehold.co/510x510.png",
+                "detail_2_url": "https://placehold.co/510x510.png"
             },
             {
                 "title": "Mistura",
@@ -397,10 +397,10 @@ def create_seed_data():
                 "status": MovieStatus.COMING_SOON,
                 "is_presale": False,
                 "release_date": today + timedelta(days=10),  # Estreno en 4 dias
-                "poster_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_poster/2/7/1/1/81172-2-esl-CO/b786f838a5a1-mistura_poster_peru_colombia_layers_61225.jpg",
-                "backdrop_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_embed/7/7/1/1/81177-1-esl-CO/2bdf8318cc67-mistura1000x510_sin_texto_img-a-la-derecha-imagentrailer_cinecolombia.png",
-                "detail_1_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/5/7/1/1/81175-1-esl-CO/63dadb6601a3-mistura510x511_bannerizq_cinecolombia.png",
-                "detail_2_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/6/7/1/1/81176-1-esl-CO/90bf61294950-mistura510x510_bannerder_cinecolombia.png"
+                "poster_url": "https://placehold.co/480x670.png",
+                "backdrop_url": "https://placehold.co/1000x510.png",
+                "detail_1_url": "https://placehold.co/510x510.png",
+                "detail_2_url": "https://placehold.co/510x510.png"
             },
             {
                 "title": "Camina o Muere",
@@ -414,10 +414,10 @@ def create_seed_data():
                 "status": MovieStatus.COMING_SOON,
                 "is_presale": False,
                 "release_date": today + timedelta(days=17),  # Estreno en 4 dias
-                "poster_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_poster/9/8/1/0/80189-1-esl-CO/3b80932784bd-2_poster_480x670.png",
-                "backdrop_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_embed/4/9/1/0/80194-1-esl-CO/09bda886e8ce-3_imagentrailer_1000x510.jpg",
-                "detail_1_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/2/9/1/0/80192-1-esl-CO/3b0db9ae128a-4_bannerizq_510x510.jpg",
-                "detail_2_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/3/9/1/0/80193-1-esl-CO/c588c4bde4c5-5_bannerder_510x510.jpg"
+                "poster_url": "https://placehold.co/480x670.png",
+                "backdrop_url": "https://placehold.co/1000x510.png",
+                "detail_1_url": "https://placehold.co/510x510.png",
+                "detail_2_url": "https://placehold.co/510x510.png"
             },
             # PREVENTAS
             {
@@ -432,10 +432,10 @@ def create_seed_data():
                 "status": MovieStatus.COMING_SOON,
                 "is_presale": True,
                 "release_date": today + timedelta(days=52),  # Estreno en 7+ semanas
-                "poster_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_poster/4/1/5/1/81514-5-esl-CO/86ced68cb262-2017_bts_wingstour_480-x-670.jpg",
-                "backdrop_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_embed/9/1/5/1/81519-5-esl-CO/852afaa101c0-2017_bts_wingstour_1000-x-510.jpg",
-                "detail_1_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/9/7/4/1/81479-1-esl-CO/2d902bb0036f-bts-movie-weeks.jpg",
-                "detail_2_url": "https://archivos-cms.cinecolombia.com/images/_aliases/exhibition_split_banner/9/7/4/1/81479-1-esl-CO/2d902bb0036f-bts-movie-weeks.jpg"
+                "poster_url": "https://placehold.co/480x670.png",
+                "backdrop_url": "https://placehold.co/1000x510.png",
+                "detail_1_url": "https://placehold.co/510x510.png",
+                "detail_2_url": "https://placehold.co/510x510.png"
             }
         ]
         

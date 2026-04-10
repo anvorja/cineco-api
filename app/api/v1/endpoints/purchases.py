@@ -13,7 +13,7 @@ from app.models import User
 router = APIRouter()
 
 
-@router.post("/", response_model=PurchaseResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=PurchaseResponse, status_code=status.HTTP_201_CREATED)
 async def create_purchase(
         purchase_data: PurchaseCreate,
         db: Session = Depends(get_db),
@@ -50,7 +50,7 @@ async def create_purchase(
     return PurchaseResponse.from_orm(purchase)
 
 
-@router.get("/", response_model=List[PurchaseListResponse])
+@router.get("", response_model=List[PurchaseListResponse])
 async def get_my_purchases(
         skip: int = Query(default=0, ge=0, description="Número de registros a omitir"),
         limit: int = Query(default=10, ge=1, le=50, description="Número máximo de registros a devolver"),
