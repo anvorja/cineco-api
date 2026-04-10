@@ -156,6 +156,13 @@ class MovieService:
 
         if available_only:
             query = query.filter(Movie.available_tickets > 0)
+            # Solo mostrar películas en cartelera o próximos estrenos con preventa
+            query = query.filter(
+                or_(
+                    Movie.status == MovieStatus.IN_THEATERS,
+                    and_(Movie.status == MovieStatus.COMING_SOON, Movie.is_presale == True)
+                )
+            )
 
         # Filtro por teatro
         if theater_name:

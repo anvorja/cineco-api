@@ -35,23 +35,15 @@ async def get_movies(
     """
     # Si no especifica status, mostrar películas "disponibles"
     if status is None:
-        # Obtener películas en cartelera Y próximos estrenos con preventa
-        movies = MovieService.get_movies(
+        available_movies = MovieService.get_movies(
             db=db,
             skip=skip,
             limit=limit,
             include_inactive=False,
             theater_name=theater,
+            is_presale=is_presale,
             available_only=True
         )
-
-        # Filtrar las que están disponibles para mostrar
-        available_movies = [movie for movie in movies if movie.is_available]
-
-        # Aplicar filtro de preventa si se especifica
-        if is_presale is not None:
-            available_movies = [movie for movie in available_movies if movie.is_presale == is_presale]
-
     else:
         # Usar status específico
         try:
@@ -185,11 +177,9 @@ async def get_movie_theaters(
         db: Session = Depends(get_db)
 ):
     """Obtener todos los teatros donde se proyecta una película."""
-    movie = MovieService.get_movie_by_id(db=db, movie_id=movie_id)
-    if not movie:
-        raise HTTPException(status_code=404, detail="Película no encontrada")
-
     theaters = MovieService.get_theaters_for_movie(db=db, movie_id=movie_id)
+    if theaters is None:
+        raise HTTPException(status_code=404, detail="Película no encontrada")
     return [TheaterResponse.from_orm(theater) for theater in theaters]
 
 
@@ -204,14 +194,13 @@ async def get_movie_availability(
     if not movie:
         raise HTTPException(status_code=404, detail="Película no encontrada")
 
-    # Obtener próximos horarios (próximos 3 días)
+    # Filtrar los próximos 3 días de los showtimes ya cargados (evita segunda query)
     today = date.today()
-    upcoming_showtimes = MovieService.get_movie_showtimes(
-        db=db,
-        movie_id=movie_id,
-        start_date=today,
-        end_date=today + timedelta(days=3)
-    )
+    cutoff = today + timedelta(days=3)
+    upcoming_showtimes = [
+        st for st in movie.showtimes
+        if st.is_active and today <= st.show_date <= cutoff
+    ]
 
     # Agrupar por fecha
     showtimes_by_date = {}
