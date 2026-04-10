@@ -10,8 +10,10 @@ from app.models.movie import MovieStatus, Movie
 from app.models.theater import Theater
 from app.schemas.movie import (
     MovieListResponse, MovieWithShowtimesResponse,
-    ShowtimeResponse, TheaterResponse
+    ShowtimeResponse, TheaterResponse, HomeResponse
 )
+from app.core.cache import cache
+from app.core.config import settings
 
 router = APIRouter()
 
@@ -127,6 +129,41 @@ async def get_presale_movies(
     """Obtener películas en preventa."""
     movies = MovieService.get_movies_in_presale(db=db, limit=limit)
     return [MovieListResponse.from_orm(movie) for movie in movies]
+
+
+@router.get("/home", response_model=HomeResponse)
+async def get_home_data(
+        cartelera_limit: int = Query(default=8, ge=1, le=20),
+        coming_soon_limit: int = Query(default=4, ge=1, le=10),
+        presales_limit: int = Query(default=4, ge=1, le=10),
+        db: Session = Depends(get_db)
+):
+    """
+    Aggregated home page data in a single request.
+    Returns cartelera, coming-soon, and presales — the three sections needed by the frontend home page.
+    Response is cached for improved performance.
+    """
+    cache_key = f"home:{cartelera_limit}:{coming_soon_limit}:{presales_limit}"
+
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
+
+    data = MovieService.get_home_data(
+        db,
+        cartelera_limit=cartelera_limit,
+        coming_soon_limit=coming_soon_limit,
+        presales_limit=presales_limit,
+    )
+
+    result = {
+        "cartelera": [MovieListResponse.from_orm(m).model_dump(mode="json") for m in data["cartelera"]],
+        "coming_soon": [MovieListResponse.from_orm(m).model_dump(mode="json") for m in data["coming_soon"]],
+        "presales": [MovieListResponse.from_orm(m).model_dump(mode="json") for m in data["presales"]],
+    }
+
+    cache.set(cache_key, result, ttl=settings.CACHE_HOME_TTL)
+    return result
 
 
 @router.get("/{movie_id}", response_model=MovieWithShowtimesResponse)

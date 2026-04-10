@@ -30,6 +30,11 @@ class Settings(BaseSettings):
     EMAIL_USER: str
     EMAIL_APP_PASSWORD: str
 
+    # Cache
+    REDIS_URL: str = ""
+    CACHE_DEFAULT_TTL: int = 300
+    CACHE_HOME_TTL: int = 120
+
     # App Settings
     DEBUG: bool = False
 

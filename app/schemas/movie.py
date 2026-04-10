@@ -277,6 +277,13 @@ class MovieListResponse(BaseModel):
         )
 
 
+class HomeResponse(BaseModel):
+    """Aggregated home page payload — all sections in a single response."""
+    cartelera: List[MovieListResponse]
+    coming_soon: List[MovieListResponse]
+    presales: List[MovieListResponse]
+
+
 # Schema para crear horarios masivamente
 class CreateShowtimesRequest(BaseModel):
     """Esquema para crear horarios masivamente"""

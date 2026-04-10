@@ -8,6 +8,7 @@ from fastapi import HTTPException, status
 from app.models import Movie, MovieStatus
 from app.models.theater import Theater, TheaterMovie, MovieShowtime, ShowtimeFormat
 from app.schemas.movie import MovieCreate, MovieUpdate
+from app.core.cache import cache
 
 
 class MovieService:
@@ -54,6 +55,7 @@ class MovieService:
         if movie_data.theater_ids:
             MovieService.assign_movie_to_theaters(db, movie.id, movie_data.theater_ids)
 
+        cache.delete_pattern("home:*")
         return movie
 
     @staticmethod
@@ -200,6 +202,7 @@ class MovieService:
         db.commit()
         db.refresh(movie)
 
+        cache.delete_pattern("home:*")
         return movie
 
     @staticmethod
@@ -213,6 +216,7 @@ class MovieService:
         db.commit()
         db.refresh(movie)
 
+        cache.delete_pattern("home:*")
         return movie
 
     @staticmethod
@@ -270,19 +274,73 @@ class MovieService:
 
     @staticmethod
     def get_movies_coming_soon(db: Session, limit: int = 10) -> List[Movie]:
-        """Obtener próximos estrenos"""
-        return db.query(Movie).filter(
-            Movie.status == MovieStatus.COMING_SOON,
-            Movie.is_active == True
-        ).order_by(Movie.release_date).limit(limit).all()
+        """Obtener próximos estrenos con relaciones cargadas."""
+        return (
+            db.query(Movie)
+            .options(selectinload(Movie.theater_movies).selectinload(TheaterMovie.theater))
+            .filter(Movie.status == MovieStatus.COMING_SOON, Movie.is_active == True)
+            .order_by(Movie.release_date)
+            .limit(limit)
+            .all()
+        )
 
     @staticmethod
     def get_movies_in_presale(db: Session, limit: int = 10) -> List[Movie]:
-        """Obtener películas en preventa"""
-        return db.query(Movie).filter(
-            Movie.is_presale == True,
-            Movie.is_active == True
-        ).order_by(Movie.release_date).limit(limit).all()
+        """Obtener películas en preventa con relaciones cargadas."""
+        return (
+            db.query(Movie)
+            .options(selectinload(Movie.theater_movies).selectinload(TheaterMovie.theater))
+            .filter(Movie.is_presale == True, Movie.is_active == True)
+            .order_by(Movie.release_date)
+            .limit(limit)
+            .all()
+        )
+
+    @staticmethod
+    def get_home_data(
+        db: Session,
+        cartelera_limit: int = 8,
+        coming_soon_limit: int = 4,
+        presales_limit: int = 4,
+    ) -> Dict[str, List[Movie]]:
+        """
+        Fetch all home page data in 3 focused queries — no extra round-trips.
+        Each query loads theater relations eagerly to avoid N+1 during serialization.
+        """
+        eager = selectinload(Movie.theater_movies).selectinload(TheaterMovie.theater)
+
+        cartelera = (
+            db.query(Movie)
+            .options(eager)
+            .filter(
+                Movie.is_active == True,
+                Movie.status == MovieStatus.IN_THEATERS,
+                Movie.available_tickets > 0,
+            )
+            .order_by(desc(Movie.created_at))
+            .limit(cartelera_limit)
+            .all()
+        )
+
+        coming_soon = (
+            db.query(Movie)
+            .options(eager)
+            .filter(Movie.is_active == True, Movie.status == MovieStatus.COMING_SOON)
+            .order_by(Movie.release_date)
+            .limit(coming_soon_limit)
+            .all()
+        )
+
+        presales = (
+            db.query(Movie)
+            .options(eager)
+            .filter(Movie.is_active == True, Movie.is_presale == True)
+            .order_by(Movie.release_date)
+            .limit(presales_limit)
+            .all()
+        )
+
+        return {"cartelera": cartelera, "coming_soon": coming_soon, "presales": presales}
 
     @staticmethod
     def get_daily_schedule(db: Session, target_date: date) -> Dict[str, Any]:

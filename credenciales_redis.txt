@@ -1,0 +1,8 @@
+REDIS_PASSWORD=vxDLDeCNXOVJAcxsHivAbBbjVnBNbcen
+REDIS_PUBLIC_URL=redis://default:vxDLDeCNXOVJAcxsHivAbBbjVnBNbcen@mainline.proxy.rlwy.net:34722
+REDIS_URL=redis://default:vxDLDeCNXOVJAcxsHivAbBbjVnBNbcen@redis.railway.internal:6379
+REDISHOST=redis.railway.internal
+REDISPASSWORD=vxDLDeCNXOVJAcxsHivAbBbjVnBNbcen
+REDISPORT=6379
+REDISUSER=default
+
