@@ -1,9 +1,13 @@
 # app/api/v1/endpoints/admin.py - CORREGIDO CON IMPORTS
+import hashlib
+import time
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
+from app.core.config import settings
 from app.core.database import get_db
 from app.api.dependencies import get_current_admin
 from app.services.movie_service import MovieService
@@ -23,6 +27,42 @@ from app.schemas.blacklist import (
 )
 
 router = APIRouter()
+
+
+# ── Cloudinary signed upload ───────────────────────────────────────────────────
+
+class CloudinarySignRequest(BaseModel):
+    public_id: str
+    folder: str = "cinema/movies"
+
+
+@router.post("/cloudinary/sign")
+async def sign_cloudinary_upload(
+    body: CloudinarySignRequest,
+    current_admin: User = Depends(get_current_admin)
+):
+    """Genera firma para upload directo a Cloudinary (preset Signed)."""
+    if not settings.CLOUDINARY_API_SECRET:
+        raise HTTPException(status_code=500, detail="Cloudinary no configurado en el servidor")
+
+    timestamp = int(time.time())
+    params = {
+        "folder": body.folder,
+        "public_id": body.public_id,
+        "timestamp": str(timestamp),
+        "upload_preset": settings.CLOUDINARY_UPLOAD_PRESET,
+    }
+    # Cloudinary: ordenar alfabéticamente y concatenar
+    params_string = "&".join(f"{k}={v}" for k, v in sorted(params.items()))
+    to_sign = params_string + settings.CLOUDINARY_API_SECRET
+    signature = hashlib.sha1(to_sign.encode()).hexdigest()
+
+    return {
+        "signature": signature,
+        "timestamp": timestamp,
+        "api_key": settings.CLOUDINARY_API_KEY,
+        "upload_preset": settings.CLOUDINARY_UPLOAD_PRESET,
+    }
 
 
 @router.post("/movies", response_model=MovieResponse, status_code=status.HTTP_201_CREATED)

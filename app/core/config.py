@@ -35,6 +35,11 @@ class Settings(BaseSettings):
     CACHE_DEFAULT_TTL: int = 300
     CACHE_HOME_TTL: int = 120
 
+    # Cloudinary
+    CLOUDINARY_API_KEY: str = ""
+    CLOUDINARY_API_SECRET: str = ""
+    CLOUDINARY_UPLOAD_PRESET: str = "cinema"
+
     # App Settings
     DEBUG: bool = False
 

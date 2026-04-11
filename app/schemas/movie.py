@@ -28,8 +28,8 @@ class MovieBase(BaseModel):
     duration: int = Field(..., gt=0, le=600, description="Duración en minutos")
     rating: str = Field(..., pattern="^(G|PG|PG-13|R|NC-17)$", description="Clasificación")
     price: float = Field(..., gt=0, le=100000, description="Precio del ticket en pesos colombianos")
-    director: str = Field(..., min_length=1, max_length=200, description="Director de la película")
-    country: str = Field(..., min_length=1, max_length=100, description="País de origen")
+    director: Optional[str] = Field(None, max_length=200, description="Director de la película")
+    country: Optional[str] = Field(None, max_length=100, description="País de origen")
     status: MovieStatus = Field(default=MovieStatus.IN_THEATERS, description="Estado en cartelera")
     is_presale: bool = Field(default=False, description="Si está en preventa")
     release_date: date = Field(..., description="Fecha de estreno")
@@ -83,8 +83,8 @@ class MovieUpdate(BaseModel):
     duration: Optional[int] = Field(None, gt=0, le=600)
     rating: Optional[str] = Field(None, pattern="^(G|PG|PG-13|R|NC-17)$")
     price: Optional[float] = Field(None, gt=0, le=100000)
-    director: Optional[str] = Field(None, min_length=1, max_length=200)
-    country: Optional[str] = Field(None, min_length=1, max_length=100)
+    director: Optional[str] = Field(None, max_length=200)
+    country: Optional[str] = Field(None, max_length=100)
     status: Optional[MovieStatus] = None
     is_presale: Optional[bool] = None
     release_date: Optional[date] = None
