@@ -32,20 +32,24 @@ async def create_purchase(
 
     Requiere un token JWT válido.
     """
-    # Publish order.created before processing so the event reflects intent
-    await publish_event("order.created", {
-        "user_id": current_user.id,
-        "user_email": current_user.email,
-        "movie_id": purchase_data.movie_id,
-        "quantity": purchase_data.quantity,
-    })
-
-    # Create purchase with tickets (synchronous DB transaction)
+    # Create purchase with tickets (synchronous DB transaction).
+    # order.created se publica DESPUÉS del commit para garantizar que Redis
+    # solo se decrementa cuando la compra realmente existe en BD.
+    # En Phase 3, booking-service publicará order.created antes del pago y
+    # esperará inventory.reserved antes de proceder (saga completa).
     purchase = PurchaseService.create_purchase(
         db=db,
         user_id=current_user.id,
         purchase_data=purchase_data
     )
+
+    # Notificar a inventory-service del decremento confirmado
+    await publish_event("order.created", {
+        "user_id": current_user.id,
+        "user_email": current_user.email,
+        "movie_id": purchase.movie_id,
+        "quantity": purchase.quantity,
+    })
 
     # Publish payment.success — payload is enriched so notification-service
     # is fully autonomous and never needs to call back to the monolith
