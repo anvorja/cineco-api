@@ -40,6 +40,12 @@ class Settings(BaseSettings):
     CLOUDINARY_API_SECRET: str = ""
     CLOUDINARY_UPLOAD_PRESET: str = "cinema"
 
+    # Kafka (Confluent Cloud)
+    KAFKA_ENABLED: bool = False
+    KAFKA_BOOTSTRAP_SERVERS: str = ""
+    KAFKA_API_KEY: str = ""
+    KAFKA_API_SECRET: str = ""
+
     # App Settings
     DEBUG: bool = False
 
