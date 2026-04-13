@@ -1,8 +1,13 @@
 # app/api/v1/router.py
 from fastapi import APIRouter
-from .endpoints import auth, movies, admin, purchases, calendar, theaters, users
+from .endpoints import admin, users
+# purchases  → migrado a booking-service  (Phase 3, Traefik /api/v1/purchases → :8004)
+# auth       → migrado a auth-service     (Phase 4, Traefik /api/v1/auth     → :8005)
+# movies     → migrado a catalog-service  (Phase 4, Traefik /api/v1/movies   → :8006)
+# theaters   → migrado a catalog-service  (Phase 4, Traefik /api/v1/theaters → :8006)
+# calendar   → migrado a catalog-service  (Phase 4, Traefik /api/v1/calendar → :8006)
 
-# Create main API router
+# Create main API router — solo admin y users permanecen en el monolito
 api_router = APIRouter(
     prefix="/api/v1",
     responses={
@@ -12,37 +17,9 @@ api_router = APIRouter(
 )
 
 api_router.include_router(
-    auth.router,
-    prefix="/auth",
-    tags=["🔐 Authentication"],
-    responses={401: {"description": "Authentication failed"}}
-)
-
-api_router.include_router(
     users.router,
     prefix="/users",
-    tags=["👤 User"])
-
-api_router.include_router(
-    movies.router,
-    prefix="/movies",
-    tags=["🎬 Movies"]
-)
-
-api_router.include_router(
-    theaters.router,
-    prefix="/theaters",
-    tags=["🏢 Theaters"],
-    responses={404: {"description": "Theater not found"}}
-)
-
-api_router.include_router(
-    purchases.router,
-    prefix="/purchases",
-    tags=["🎫 Purchases"],
-    responses={
-        401: {"description": "Authentication required"}
-    }
+    tags=["👤 User"]
 )
 
 api_router.include_router(
@@ -53,12 +30,5 @@ api_router.include_router(
         401: {"description": "Authentication required"},
         403: {"description": "Admin privileges required"}
     }
-)
-
-api_router.include_router(
-    calendar.router,
-    prefix="/calendar",
-    tags=["📅 Showtimes & Schedules"],
-    responses={404: {"description": "Información no encontrada"}}
 )
 

@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.core.database import engine, create_tables
 from app.api.v1.router import api_router
+from app.kafka.producer import start_producer, stop_producer
 
 # Configure logging
 logging.basicConfig(
@@ -42,11 +43,14 @@ async def lifespan(_app: FastAPI):
         logger.error(f"Error during startup: {e}")
         raise
 
+    await start_producer()
+
     logger.info("Cinema Ticket API started successfully!")
     yield
 
     # Shutdown
     logger.info("Shutting down Cinema Ticket API...")
+    await stop_producer()
     engine.dispose()
     logger.info("Database connection closed")
 

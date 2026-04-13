@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Tests & coverage
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Dev tools
+.idea/
+.vscode/
+.ruff_cache/
+.mypy_cache/
+
+# Git
+.git/
+.gitignore
+
+# Docs & extras
+*.md
+*.pdf
+*.png
+*.http
+db/
+img.png
+
+# Environment (secrets never van en imagen)
+.env
+
+# Alembic (migrations run separately, not baked into image)
+migrations/
+alembic.ini

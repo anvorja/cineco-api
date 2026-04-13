@@ -9,6 +9,8 @@ from app.services.purchase_service import PurchaseService
 from app.services.email_service import EmailService
 from app.schemas.purchase import PurchaseCreate, PurchaseResponse, PurchaseListResponse
 from app.models import User
+from app.kafka.producer import publish_event
+from app.core.config import settings
 
 router = APIRouter()
 
@@ -30,22 +32,60 @@ async def create_purchase(
 
     Requiere un token JWT válido.
     """
-    # Create purchase with tickets
+    # Create purchase with tickets (synchronous DB transaction).
+    # order.created se publica DESPUÉS del commit para garantizar que Redis
+    # solo se decrementa cuando la compra realmente existe en BD.
+    # En Phase 3, booking-service publicará order.created antes del pago y
+    # esperará inventory.reserved antes de proceder (saga completa).
     purchase = PurchaseService.create_purchase(
         db=db,
         user_id=current_user.id,
         purchase_data=purchase_data
     )
 
-    try:
-        await EmailService.send_purchase_confirmation(
-            user=current_user,
-            purchase=purchase,
-            tickets=purchase.tickets
-        )
-    except Exception as e:
-        # Don't fail the purchase if email fails
-        pass
+    # Notificar a inventory-service del decremento confirmado
+    await publish_event("order.created", {
+        "user_id": current_user.id,
+        "user_email": current_user.email,
+        "movie_id": purchase.movie_id,
+        "quantity": purchase.quantity,
+    })
+
+    # Publish payment.success — payload is enriched so notification-service
+    # is fully autonomous and never needs to call back to the monolith
+    await publish_event("payment.success", {
+        "order_id": purchase.id,
+        "user_id": current_user.id,
+        "user_email": current_user.email,
+        "customer_name": current_user.full_name,
+        "movie_id": purchase.movie_id,
+        "movie_title": purchase.movie.title,
+        "movie_genre": purchase.movie.genre,
+        "movie_duration": purchase.movie.duration,
+        "movie_rating": purchase.movie.rating,
+        "quantity": purchase.quantity,
+        "total_amount": float(purchase.total_amount),
+        "transaction_id": purchase.payment_info.get("transaction_id"),
+        "payment_last_four": purchase.payment_info.get("last_four", "****"),
+        "purchase_created_at": purchase.created_at.isoformat(),
+        "tickets": [
+            {"code": t.ticket_code, "seat": t.seat_number, "status": t.status.value.upper()}
+            for t in purchase.tickets
+        ],
+    })
+
+    # Fallback: solo enviar email síncronamente si Kafka está desactivado.
+    # Con Kafka activo, notification-service consume payment.success y envía el email.
+    # Enviar aquí también causaría email duplicado al comprador.
+    if not settings.KAFKA_ENABLED:
+        try:
+            await EmailService.send_purchase_confirmation(
+                user=current_user,
+                purchase=purchase,
+                tickets=purchase.tickets
+            )
+        except Exception:
+            pass
 
     return PurchaseResponse.from_orm(purchase)
 
